@@ -44,9 +44,9 @@ public class NotebookBukkit  extends JavaPlugin {
 		
 		// init based on backend method currently set
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)
-			NoteManager.getInstance().initFlatFile(getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").getString("filename"));
+			NoteManager.getInstance().initFlatFile(getConfig().getString("storage.flatfile.filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
-			NoteManager.getInstance().initSqlite(getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").getString("filename"));
+			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
 			NoteManager.getInstance().initMysql();
 	
@@ -64,7 +64,6 @@ public class NotebookBukkit  extends JavaPlugin {
 					return NoteManager.getInstance().getNumNotes();
 				}
 			});
-			
 			
 			metrics.start();
 		} catch (IOException e) {
@@ -94,63 +93,26 @@ public class NotebookBukkit  extends JavaPlugin {
 		// check config version and apply appropriately
 		switch(getConfig().getInt("do-not-change-config-version")) {
 			case(2):
-				if (!getConfig().contains("broadcast-message")) {
-					getConfig().set("broadcast-message", true);
-				}
-				if(!getConfig().contains("debug")) {
-					getConfig().set("debug", false);
-				}
-				if (!getConfig().contains("storage")) {
-					getConfig().createSection("storage");
+				// misc stuff				
+				if (!getConfig().contains("broadcast-message")) getConfig().set("broadcast-message", true);
+				if (!getConfig().contains("debug")) getConfig().set("debug", false);
+
+				// flat file stuff
+				if (!getConfig().contains("storage.flatfile.enabled")) getConfig().set("storage.flatfile.enabled", true);
+				if (!getConfig().contains("storage.flatfile.filename")) getConfig().set("storage.flatfile.filename", "notes.txt");
+
+				// sqlite stuff
+				if (!getConfig().contains("storage.sqlite.enabled")) getConfig().set("storage.sqlite.enabled", false);
+				if (!getConfig().contains("storage.sqlite.filename")) getConfig().set("storage.sqlite.filename", "notes.db");
 					
-					// flat file
-					if(!getConfig().getConfigurationSection("storage").contains("flatfile")) {
-						getConfig().getConfigurationSection("storage").createSection("flatfile");
-						
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").contains("enabled")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").set("enabled", true);
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").contains("filename")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").set("filename", "Notes.txt");
-						}
-					}
-					
-					// sqlite
-					if (!getConfig().getConfigurationSection("storage").contains("sqlite")) {
-						getConfig().getConfigurationSection("storage").createSection("sqlite");
-						
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").contains("enabled")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").set("enabled", false);
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").contains("filename")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").set("filename", "notes.db");
-						}
-					}
-					
-					// mysql
-					if (!getConfig().getConfigurationSection("storage").contains("mysql")) {
-						getConfig().getConfigurationSection("storage").createSection("mysql");
-						
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("enabled")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("enabled", false);
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("host")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("host", "localhost");
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("port")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("host", 3306);
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("username")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("username", "root");
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("password")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("password", "password");
-						}
-						if (!getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").contains("database")) {
-							getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("database", "minecraft");
-						}
-					}
-				}
+				// mysql stuff
+				if (!getConfig().contains("storage.mysql.enabled")) getConfig().set("storage.mysql.enabled", false);
+				if (!getConfig().contains("storage.mysql.host")) getConfig().set("storage.mysql.host", "localhost");
+				if (!getConfig().contains("storage.mysql.port")) getConfig().set("storage.mysql.port", 3306);
+				if (!getConfig().contains("storage.mysql.username")) getConfig().set("storage.mysql.username", "root");
+				if (!getConfig().contains("storage.mysql.password")) getConfig().set("storage.mysql.password", "password");
+				if (!getConfig().contains("storage.mysql.database")) getConfig().set("storage.mysql.database", "minecraft");
+
 				saveConfig();
 				break;
 			default:
@@ -175,32 +137,31 @@ public class NotebookBukkit  extends JavaPlugin {
 		
 		// check backend types, make sure only ones enabled
 		int i = 0;
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").getBoolean("enabled")) i++;
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").getBoolean("enabled")) i++;
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").getBoolean("enabled")) i++;
+		if (getConfig().getBoolean("storage.flatfile.enabled")) i++;
+		if (getConfig().getBoolean("storage.sqlite.enabled")) i++;
+		if (getConfig().getBoolean("storage.mysql.enabled")) i++;
 		
 		if (i == 0) {
 			log.severe(prefix + "At least one storage method must be enabled.  Defaulting to flatfile");
-			getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").set("enabled", true);
+			getConfig().set("storage.flatfile.enabled", true);
 		}
 		if (i != 1) {
 			log.severe(prefix + "More than one storage method enabled, only one can be used at a time.");
 			
 			// find the first one thats enabled and enable it only
-			if (getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").getBoolean("enabled")) {
-				getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").set("enabled", false);
-				getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("enabled", false);
+			if (getConfig().getBoolean("storage.flatfile.enabled")) {
+				getConfig().set("storage.mysql.enabled", false);
 				log.severe(prefix + "Enabling flatfile only");
 			}
-			if (getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").getBoolean("enabled")) {
-				getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").set("enabled", false);
+			if (getConfig().getBoolean("storage.sqlite.enabled")) {
+				getConfig().set("storage.mysql.enabled", false);
 				log.severe(prefix + "Enabling flatfile only");
 			}
 		}
 		
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").getBoolean("enabled")) backend = Backend.FLATFILE;
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").getBoolean("enabled")) backend = Backend.SQLITE;
-		if (getConfig().getConfigurationSection("storage").getConfigurationSection("mysql").getBoolean("enabled")) backend = Backend.MYSQL;
+		if (getConfig().getBoolean("storage.flatfile.enabled")) backend = Backend.FLATFILE;
+		if (getConfig().getBoolean("storage.sqlite.enabled")) backend = Backend.SQLITE;
+		if (getConfig().getBoolean("storage.mysql.enabled")) backend = Backend.MYSQL;
 		
 		
 		log.info(prefix + " config loaded successfully");

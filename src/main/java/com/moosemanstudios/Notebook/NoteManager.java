@@ -70,9 +70,8 @@ public class NoteManager {
 	
 	/**
 	 * Create the hashset, setup any other needed essentials
-	 * @param backend - the backend desired
 	 */
-	public void init(String backend) {
+	public void init() {
 		// check for valid noteHash
 		if (noteHash == null) {
 			noteHash = new HashSet<Note>();
@@ -82,30 +81,15 @@ public class NoteManager {
 		log = Logger.getLogger("minecraft");
 		prefix = "[Notebook]";
 		mainDirectory = "plugins/notebook/";
-		
-		setBackend(backend);
 	}
 	
 	/**
 	 * Set the backend to a specific type
 	 * @param backend - the backend type to use
 	 */
-	public void setBackend(String backend) {
+	public void setBackend(Backend backend) {
 		// set the backend type based on the input
-		if (backend.equalsIgnoreCase("flatfile")) {
-			currentBackend = Backend.FLATFILE;
-			initFlatFile();
-		} else if (backend.equalsIgnoreCase("mysql")) {
-			currentBackend = Backend.MYSQL;
-			initMysql();
-		} else if (backend.equalsIgnoreCase("sqlite")) {
-			currentBackend = Backend.SQLITE;
-			initSqlite();
-		} else {
-			// invalid option given, default to flatfile
-			currentBackend = Backend.FLATFILE;
-			initFlatFile();
-		}
+		currentBackend = backend;
 	}
 	
 	/**
@@ -429,7 +413,7 @@ public class NoteManager {
 	 * 
 	 * @return Return true if file was created
 	 */
-	private Boolean initFlatFile() {
+	public Boolean initFlatFile() {
 		File file = new File(mainDirectory, "notes.txt");
 		if (!file.exists()) {
 			try { 
@@ -456,7 +440,7 @@ public class NoteManager {
 	 * 
 	 * @return Returns true if mysql initialization was successful
 	 */
-	private Boolean initMysql() {
+	public Boolean initMysql() {
 		File file = new File(mainDirectory + "mysql.properties");
 		if (!file.exists()) {
 			createMySQLPropertiesFile();
@@ -491,7 +475,7 @@ public class NoteManager {
 	 *  
 	 * @return Returns true if SQLite was created successfully
 	 */
-	private Boolean initSqlite() {
+	public Boolean initSqlite() {
 		sqlite = new SQLite(log, prefix, "notes", mainDirectory);
 		
 		// open the connection, which initializes it

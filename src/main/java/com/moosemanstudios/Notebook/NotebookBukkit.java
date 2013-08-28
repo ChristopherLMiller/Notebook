@@ -3,6 +3,7 @@ package com.moosemanstudios.Notebook;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -27,6 +28,15 @@ public class NotebookBukkit  extends JavaPlugin {
 		// load the config
 		loadConfig();
 		
+		// check if SQLibrary is found before proceeding
+		Plugin SQLibrary = this.getServer().getPluginManager().getPlugin("SQLibrary");
+		if (SQLibrary == null) {
+			log.warning("SQLibrary required for database storage.  Please visit http://dev.bukkit.org/bukkit-plugins/sqlibrary/ to download");
+			log.warning("Switching to flatfile storage");
+			getConfig().set("backend", "flatfile");
+			saveConfig();
+			backend = "flatfile";
+		}
 		NoteManager.getInstance().init(backend);
 	
 		// register the command executor
@@ -49,9 +59,6 @@ public class NotebookBukkit  extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		// register keybinding
-		//SpoutManager.getKeyBindingManager().registerBinding("notebook_keybinding", Keyboard.KEY_N, "Notebook GUI", new NotebookBindingDelegate(this), this);
 		
 		// everything is done, at this point let the player know its enabled.
 		pdfFile = this.getDescription();

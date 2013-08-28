@@ -19,8 +19,9 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import lib.PatPeter.SQLibrary.SQLite;
 import lib.PatPeter.SQLibrary.MySQL;
+import lib.PatPeter.SQLibrary.SQLite;
+
 
 public class NoteManager {
 	private static NoteManager instance = null;
@@ -296,9 +297,9 @@ public class NoteManager {
 			}
 			
 		} else if (currentBackend.equals(Backend.SQLITE)) {
-			ResultSet results = sqlite.query("SELECT * FROM notes");
 			
 			try {
+				ResultSet results = sqlite.query("SELECT * FROM notes");
 				while (results.next()) {
 					String player = results.getString("player");
 					String poster = results.getString("poster");
@@ -311,9 +312,8 @@ public class NoteManager {
 				e.printStackTrace();
 			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
-			ResultSet results = mysql.query("SELECT * FROM " + mysqlTable);
-			
 			try {
+				ResultSet results = mysql.query("SELECT * FROM " + mysqlTable);
 				while (results.next()) {
 					String player = results.getString("player");
 					String poster = results.getString("poster");
@@ -356,12 +356,22 @@ public class NoteManager {
 				return false;
 			}	
 		} else if (currentBackend.equals(Backend.SQLITE)) {
-			sqlite.query("INSERT INTO notes ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
-			return true;
+			try {
+				sqlite.query("INSERT INTO notes ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
-			String query = "INSERT INTO " + mysqlTable + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
-			mysql.query(query);
-			return true;
+			try {
+				String query = "INSERT INTO " + mysqlTable + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
+				mysql.query(query);
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -394,11 +404,21 @@ public class NoteManager {
 				return false;
 			}
 		} else if (currentBackend.equals(Backend.SQLITE)) {
-			sqlite.query("DELETE FROM notes WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
-			return true;
+			try {
+				sqlite.query("DELETE FROM notes WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
-			mysql.query("DELETE FROM " + mysqlTable + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
-			return true;
+			try {
+				mysql.query("DELETE FROM " + mysqlTable + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
 		} else {
 			return false;
 		}

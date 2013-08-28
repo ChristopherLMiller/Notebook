@@ -43,6 +43,13 @@
 			<version>1.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>lib.PatPeter</groupId>
+			<artifactId>SQLibrary</artifactId>
+			<version>4.2</version>
+			<systemPath>${basedir}/lib/SQLibrary.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
 	</dependencies>
 
 	<!-- Build configuration -->
@@ -55,9 +62,9 @@
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
-				<directory>${basedir}/src/main/resources</directory>
+				<directory>${basedir}/resources</directory>
 				<includes>
-					<include>*.yml</include>
+					<include>plugin.yml</include>
 				</includes>
 			</resource>
 		</resources>

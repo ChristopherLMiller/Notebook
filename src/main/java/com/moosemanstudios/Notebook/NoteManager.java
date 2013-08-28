@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import lib.PatPeter.SQLibrary.MySQL;
@@ -34,8 +31,14 @@ public class NoteManager {
 	SQLite sqlite;
 	MySQL mysql;
 	String mysqlTable;
+	String mysqlHost;
+	String mysqlUsername;
+	String mysqlPassword;
+	String mysqlDatabase;
+	int mysqlPort;
 	String flatFileFilename;
 	String sqliteFilename;
+	String sqliteTable;
 	
 	
 	public enum Backend {
@@ -285,7 +288,8 @@ public class NoteManager {
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			
 			try {
-				ResultSet results = sqlite.query("SELECT * FROM notes");
+				String query = "SELECT * FROM " + getSQLiteTable();
+				ResultSet results = sqlite.query(query);
 				while (results.next()) {
 					String player = results.getString("player");
 					String poster = results.getString("poster");
@@ -299,7 +303,7 @@ public class NoteManager {
 			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
 			try {
-				ResultSet results = mysql.query("SELECT * FROM " + mysqlTable);
+				ResultSet results = mysql.query("SELECT * FROM " + getMySQLTable());
 				while (results.next()) {
 					String player = results.getString("player");
 					String poster = results.getString("poster");
@@ -343,7 +347,7 @@ public class NoteManager {
 			}	
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			try {
-				sqlite.query("INSERT INTO notes ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
+				sqlite.query("INSERT INTO " + getSQLiteTable() + " ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
 				return true;
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -351,7 +355,7 @@ public class NoteManager {
 			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
 			try {
-				String query = "INSERT INTO " + mysqlTable + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
+				String query = "INSERT INTO " + getMySQLTable() + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
 				mysql.query(query);
 				return true;
 			} catch (SQLException e) {
@@ -391,7 +395,7 @@ public class NoteManager {
 			}
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			try {
-				sqlite.query("DELETE FROM notes WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
+				sqlite.query("DELETE FROM " + getSQLiteTable() + " WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
 				return true;
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -399,7 +403,7 @@ public class NoteManager {
 			}
 		} else if (currentBackend.equals(Backend.MYSQL)) {
 			try {
-				mysql.query("DELETE FROM " + mysqlTable + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
+				mysql.query("DELETE FROM " + getMySQLTable() + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
 				return true;
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -462,29 +466,15 @@ public class NoteManager {
 	 * @return Returns true if mysql initialization was successful
 	 */
 	@SuppressWarnings("deprecation")
-	public Boolean initMysql() {
-		File file = new File(mainDirectory + "mysql.properties");
-		if (!file.exists()) {
-			createMySQLPropertiesFile();
-		}
-		
-		// load properties creating the mysql object
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream(mainDirectory + "mysql.properties"));
-			mysql = new MySQL(log, prefix, prop.getProperty("mysql-host"), prop.getProperty("mysql-port"), prop.getProperty("mysql-database"), prop.getProperty("mysql-username"), prop.getProperty("mysql-password"));
-			mysqlTable = prop.getProperty("mysql-table");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
+	public Boolean initMysql(String host, int port, String username, String password, String database, String table) {
+		setMySQLproperties(host, port, username, password, database, table);
+		mysql = new MySQL(log, prefix, getMySQLHost(), getMySQLPort(), getMySQLDatabase(), getMySQLUsername(), getMySQLPassword());
 		mysql.open();
 		
 		// check if the table exists
-		if (!mysql.checkTable(mysqlTable)) {
-			log.info(prefix + " created table " + mysqlTable);
-			String query = "CREATE TABLE IF NOT EXISTS " + mysqlTable + " (id INT NOT NULL AUTO_INCREMENT, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15), PRIMARY KEY (id) );";
+		if (!mysql.checkTable(getMySQLTable())) {
+			log.info(prefix + " created table " + getMySQLTable());
+			String query = "CREATE TABLE IF NOT EXISTS " + getMySQLTable() + " (id INT NOT NULL AUTO_INCREMENT, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15), PRIMARY KEY (id) );";
 			mysql.createTable(query);
 		}
 		
@@ -492,14 +482,46 @@ public class NoteManager {
 		return true;		
 	}
 	
+	private void setMySQLproperties(String host, int port, String username, String password, String database, String table)
+	{
+		mysqlHost = host;
+		mysqlUsername = username;
+		mysqlPassword = password;
+		mysqlDatabase = database;
+		mysqlTable = table;
+	}
+	
+	private String getMySQLHost() {
+		return mysqlHost;
+	}
+	
+	private int getMySQLPort() {
+		return mysqlPort;
+	}
+	
+	private String getMySQLDatabase() {
+		return mysqlDatabase;
+	}
+	
+	private String getMySQLUsername() {
+		return mysqlUsername;
+	}
+	
+	private String getMySQLPassword() {
+		return mysqlPassword;
+	}
+	
+	private String getMySQLTable() {
+		return mysqlTable;
+	}
+	
 	/**
 	 *  Create SQLite database file and populate initial table
-	 *  
 	 * @return Returns true if SQLite was created successfully
 	 */
 	@SuppressWarnings("deprecation")
-	public Boolean initSqlite(String filename) {
-		setSQliteFilename(filename);
+	public Boolean initSqlite(String filename, String table) {
+		setSQliteProperties(filename, table);
 		sqlite = new SQLite(log, prefix, getSQliteFilename(), mainDirectory);
 		
 		// open the connection, which initializes it
@@ -508,7 +530,7 @@ public class NoteManager {
 		// check if the table exists
 		if (!sqlite.checkTable("notes")) {
 			log.info(prefix + " created table notes");
-			String query = "CREATE TABLE notes (id INT AUTO_INCREMENT PRIMARY_KEY, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
+			String query = "CREATE TABLE " + getSQLiteTable() + " (id INT AUTO_INCREMENT PRIMARY_KEY, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
 			sqlite.createTable(query);
 		}
 		
@@ -517,12 +539,14 @@ public class NoteManager {
 	}
 	
 	/**
-	 * Set the sqlite filename
+	 * Set the sqlite properties
 	 * @param String filename
+	 * @param String table
 	 */
-	private void setSQliteFilename(String filename)
+	private void setSQliteProperties(String filename, String table)
 	{
 		sqliteFilename = filename;
+		sqliteTable = table;
 	}
 	
 	private String getSQliteFilename()
@@ -530,31 +554,9 @@ public class NoteManager {
 		return sqliteFilename;
 	}
 	
-	/**
-	 * Create file to hold mysql properties
-	 * 
-	 * @return Returns true if properties file was created successfully
-	 */
-	private Boolean createMySQLPropertiesFile() {
-		try {
-			// create the fields
-			Properties prop = new Properties();
-			prop.setProperty("mysql-host", "localhost");
-			prop.setProperty("mysql-port", "3306");
-			prop.setProperty("mysql-username", "root");
-			prop.setProperty("mysql-password", "password");
-			prop.setProperty("mysql-database", "minecraft");
-			prop.setProperty("mysql-table", "notebook");
-			prop.store(new FileOutputStream(mainDirectory + "mysql.properties"), null);
-			
-			if (debugging) {
-				log.info(prefix + " mysql.properties created");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+	private String getSQLiteTable()
+	{
+		return sqliteTable;
 	}
 	
 	/**

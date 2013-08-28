@@ -46,9 +46,9 @@ public class NotebookBukkit  extends JavaPlugin {
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)
 			NoteManager.getInstance().initFlatFile(getConfig().getString("storage.flatfile.filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
-			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"));
+			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
-			NoteManager.getInstance().initMysql();
+			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table"));
 	
 		// register the command executor
 		noteExecutor = new NotebookCommandExecutorBukkit(this);
@@ -104,6 +104,7 @@ public class NotebookBukkit  extends JavaPlugin {
 				// sqlite stuff
 				if (!getConfig().contains("storage.sqlite.enabled")) getConfig().set("storage.sqlite.enabled", false);
 				if (!getConfig().contains("storage.sqlite.filename")) getConfig().set("storage.sqlite.filename", "notes.db");
+				if (!getConfig().contains("storage.sqlite.table")) getConfig().set("storage.sqlite.table", "notes");
 					
 				// mysql stuff
 				if (!getConfig().contains("storage.mysql.enabled")) getConfig().set("storage.mysql.enabled", false);
@@ -112,6 +113,7 @@ public class NotebookBukkit  extends JavaPlugin {
 				if (!getConfig().contains("storage.mysql.username")) getConfig().set("storage.mysql.username", "root");
 				if (!getConfig().contains("storage.mysql.password")) getConfig().set("storage.mysql.password", "password");
 				if (!getConfig().contains("storage.mysql.database")) getConfig().set("storage.mysql.database", "minecraft");
+				if (!getConfig().contains("storage.mysql.table")) getConfig().set("storage.mysql.table", "notes");
 
 				saveConfig();
 				break;

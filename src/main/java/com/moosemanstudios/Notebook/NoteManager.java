@@ -34,6 +34,8 @@ public class NoteManager {
 	SQLite sqlite;
 	MySQL mysql;
 	String mysqlTable;
+	String flatFileFilename;
+	String sqliteFilename;
 	
 	
 	public enum Backend {
@@ -252,7 +254,7 @@ public class NoteManager {
 		// load the hashset from whatever backedn is specified
 		if (currentBackend.equals(Backend.FLATFILE)) {
 			try {
-				BufferedReader input = new BufferedReader(new FileReader(mainDirectory + "notes.txt"));
+				BufferedReader input = new BufferedReader(new FileReader(mainDirectory + flatFileFilename));
 				
 				// loop through the file to get all the blocks
 				String line = null;
@@ -330,7 +332,7 @@ public class NoteManager {
 	public Boolean saveRecord(Note note) {
 		if (currentBackend.equals(Backend.FLATFILE)) {
 			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + "notes.txt", true));
+				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + flatFileFilename, true));
 				out.append(note.getPlayer() + ";" + note.getNote() + ";" + note.getTime() + ";" + note.getPoster());
 				out.newLine();
 				out.close();
@@ -370,7 +372,7 @@ public class NoteManager {
 		if (currentBackend.equals(Backend.FLATFILE)) {
 			// for flatfile easiest method will be to clear the file and rewrite everything
 			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + "notes.txt"));
+				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + flatFileFilename));
 				
 				// loop through the noteHash and output
 				for (Note noteTemp : noteHash) {
@@ -413,13 +415,14 @@ public class NoteManager {
 	 * 
 	 * @return Return true if file was created
 	 */
-	public Boolean initFlatFile() {
-		File file = new File(mainDirectory, "notes.txt");
+	public Boolean initFlatFile(String filename) {
+		setFlatFileFilename(filename);
+		File file = new File(mainDirectory, getFlatFileFilename());
 		if (!file.exists()) {
 			try { 
 				file.createNewFile();
 				if (debugging) {
-					log.info(prefix + " notes.txt created");
+					log.info(prefix + " " + flatFileFilename + " created");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -434,12 +437,31 @@ public class NoteManager {
 		
 		return false;
 	}
+	
+	/**
+	 * set the local name of the flat file
+	 * @param input filename
+	 */
+	private void setFlatFileFilename(String filename)
+	{
+		flatFileFilename = filename;
+	}
+	
+	/**
+	 * Get the name of the flat file
+	 * @return String - filename
+	 */
+	private String getFlatFileFilename()
+	{
+		return flatFileFilename;
+	}
 
 	/**
 	 * Initialize mysql driver, check connection, and create table if need be
 	 * 
 	 * @return Returns true if mysql initialization was successful
 	 */
+	@SuppressWarnings("deprecation")
 	public Boolean initMysql() {
 		File file = new File(mainDirectory + "mysql.properties");
 		if (!file.exists()) {
@@ -475,8 +497,10 @@ public class NoteManager {
 	 *  
 	 * @return Returns true if SQLite was created successfully
 	 */
-	public Boolean initSqlite() {
-		sqlite = new SQLite(log, prefix, "notes", mainDirectory);
+	@SuppressWarnings("deprecation")
+	public Boolean initSqlite(String filename) {
+		setSQliteFilename(filename);
+		sqlite = new SQLite(log, prefix, getSQliteFilename(), mainDirectory);
 		
 		// open the connection, which initializes it
 		sqlite.open();
@@ -490,6 +514,20 @@ public class NoteManager {
 		
 		reload();
 		return false;
+	}
+	
+	/**
+	 * Set the sqlite filename
+	 * @param String filename
+	 */
+	private void setSQliteFilename(String filename)
+	{
+		sqliteFilename = filename;
+	}
+	
+	private String getSQliteFilename()
+	{
+		return sqliteFilename;
 	}
 	
 	/**

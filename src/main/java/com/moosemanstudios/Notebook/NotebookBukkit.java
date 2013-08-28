@@ -3,7 +3,6 @@ package com.moosemanstudios.Notebook;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -45,9 +44,9 @@ public class NotebookBukkit  extends JavaPlugin {
 		
 		// init based on backend method currently set
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)
-			NoteManager.getInstance().initFlatFile();
+			NoteManager.getInstance().initFlatFile(getConfig().getConfigurationSection("storage").getConfigurationSection("flatfile").getString("filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
-			NoteManager.getInstance().initSqlite();
+			NoteManager.getInstance().initSqlite(getConfig().getConfigurationSection("storage").getConfigurationSection("sqlite").getString("filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
 			NoteManager.getInstance().initMysql();
 	

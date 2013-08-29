@@ -2,6 +2,7 @@ package com.moosemanstudios.Notebook;
 
 import java.util.logging.Logger;
 
+import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.plugin.Plugin;
 import org.spout.cereal.config.ConfigurationException;
 
@@ -40,6 +41,7 @@ public class NotebookSpout extends Plugin {
 		if (NoteManager.getInstance().getBackend() == Backend.MYSQL) NoteManager.getInstance().initMysql(config.MYSQL_HOST.getString(), config.MYSQL_PORT.getInt(), config.MYSQL_USERNAME.getString(), config.MYSQL_PASSWORD.getString(), config.MYSQL_DATABASE.getString(), config.MYSQL_TABLE.getString());
 		
 		//register command executor
+		AnnotatedCommandExecutorFactory.create(new NotebookCommandExecutorSpout(this));
 		
 		// enable metrics TODO: gotta fix so it works with spout
 		/*try {

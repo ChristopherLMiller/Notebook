@@ -1,0 +1,28 @@
+name: ${name}
+version: ${project.version}
+description: ${description}
+author: moose517
+main: com.moosemanstudios.Notebook.NotebookBukkit
+softdepend: [SQLibrary]
+commands:
+    note:
+        description: generic Notebook command
+permissions:
+    note.*:
+        description: Give all Notebook related permissions
+        children:
+            note.add: true
+            note.remove: true
+            note.show: true
+            note.list: true
+            note.admin: true
+    note.add:
+        description: Add note about specified player
+    note.remove:
+        description: Remove note about specified player
+    note.show:
+        description: Show notes about specified player
+    note.list:
+        description: List all players who have notes
+    note.admin:
+        descriptions: Reload the files

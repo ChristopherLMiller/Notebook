@@ -1,0 +1,6 @@
+name: ${name}
+version: ${project.version}
+description: ${description}
+author: moose517
+main: com.moosemanstudios.Notebook.NotebookSpout
+platform: SERVER

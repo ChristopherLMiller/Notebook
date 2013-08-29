@@ -72,13 +72,13 @@ public class NotebookBukkit  extends JavaPlugin {
 		
 		// everything is done, at this point let the player know its enabled.
 		pdfFile = this.getDescription();
-		log.info("[" + pdfFile.getName() + "] version " + pdfFile.getVersion() + " is enabled");
+		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");
 	}
 	
 	@Override
 	public void onDisable() {
 		// save the hashmap to disk
-		log.info("[Notebook] is disabled");
+		log.info(prefix + " is disabled");
 	}
 	
 	public void setupConfig() {
@@ -157,7 +157,7 @@ public class NotebookBukkit  extends JavaPlugin {
 			}
 			if (getConfig().getBoolean("storage.sqlite.enabled")) {
 				getConfig().set("storage.mysql.enabled", false);
-				log.severe(prefix + "Enabling flatfile only");
+				log.severe(prefix + "Enabling sqlite only");
 			}
 		}
 		

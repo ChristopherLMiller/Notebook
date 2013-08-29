@@ -85,7 +85,7 @@ public class NoteManager {
 		debugging = true;
 		log = Logger.getLogger("minecraft");
 		prefix = "[Notebook]";
-		mainDirectory = "plugins/notebook/";
+		mainDirectory = "plugins/Notebook/";
 	}
 	
 	/**
@@ -317,6 +317,7 @@ public class NoteManager {
 			}
 		}
 		
+		log.info(prefix + " Loaded "  + getNumNotes() +  " notes");
 		
 	}
 	

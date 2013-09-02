@@ -2,5 +2,5 @@ name: ${name}
 version: ${project.version}
 description: ${description}
 author: moose517
-main: com.moosemanstudios.Notebook.NotebookSpout
+main: com.moosemanstudios.Notebook.Spout.Notebook
 platform: SERVER

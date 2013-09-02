@@ -1,21 +1,24 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Spout;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.mcstats.Metrics;
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.plugin.Plugin;
 import org.spout.cereal.config.ConfigurationException;
 
-import com.moosemanstudios.Notebook.NoteManager.Backend;
+import com.moosemanstudios.Notebook.Core.NoteManager;
+import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 
-public class NotebookSpout extends Plugin {
+public class Notebook extends Plugin {
 	public Logger log = Logger.getLogger("minecraft");
 	String prefix = "[Notebook] ";
 	Backend backend;
 	Boolean debug;
 	Boolean broadcastMessage;
 	
-	private NotebookConfigSpout config;
+	private NotebookConfig config;
 
 	@SuppressWarnings("static-access")
 	@Override
@@ -41,11 +44,11 @@ public class NotebookSpout extends Plugin {
 		if (NoteManager.getInstance().getBackend() == Backend.MYSQL) NoteManager.getInstance().initMysql(config.MYSQL_HOST.getString(), config.MYSQL_PORT.getInt(), config.MYSQL_USERNAME.getString(), config.MYSQL_PASSWORD.getString(), config.MYSQL_DATABASE.getString(), config.MYSQL_TABLE.getString());
 		
 		//register command executor
-		AnnotatedCommandExecutorFactory.create(new NotebookCommandExecutorSpout(this));
+		AnnotatedCommandExecutorFactory.create(new NotebookCommandExecutor(this));
 		
 		// enable metrics TODO: gotta fix so it works with spout
 		/*try {
-			Metrics metrics = new Metrics((org.bukkit.plugin.Plugin) this);
+			Metrics metrics = new Metrics(this);
 			
 			Graph graph = metrics.createGraph("Number of note entries");
 			graph.addPlotter(new Metrics.Plotter("Notes") {
@@ -68,14 +71,14 @@ public class NotebookSpout extends Plugin {
 	}
 	
 	
-	public NotebookConfigSpout getConfig() {
+	public NotebookConfig getConfig() {
 		return config;
 	}
 	
 	@SuppressWarnings("static-access")
 	private void loadConfig() {
 		try {
-			config = new NotebookConfigSpout(getDataFolder());
+			config = new NotebookConfig(getDataFolder());
 			config.load();
 		} catch (ConfigurationException e) {
 			log.info(prefix + "Failed to load configuration");

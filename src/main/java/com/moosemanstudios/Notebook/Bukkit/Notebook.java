@@ -1,4 +1,4 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Bukkit;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -8,12 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
-import com.moosemanstudios.Notebook.NoteManager;
-import com.moosemanstudios.Notebook.NoteManager.Backend;
+import com.moosemanstudios.Notebook.Core.NoteManager;
+import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 
-public class NotebookBukkit  extends JavaPlugin {
+public class Notebook  extends JavaPlugin {
 	public Logger log = Logger.getLogger("minecraft");
-	NotebookCommandExecutorBukkit noteExecutor;
+	NotebookCommandExecutor noteExecutor;
 	String prefix = "[Notebook]";
 	PluginDescriptionFile pdfFile = null;
 	Backend backend;
@@ -30,12 +30,13 @@ public class NotebookBukkit  extends JavaPlugin {
 		
 		// check if SQLibrary is found before proceeding
 		if ((backend == Backend.SQLITE) || (backend == Backend.MYSQL)) {
-			if (getServer().getPluginManager().getPlugin("SQLibrary") == null)
+			if (getServer().getPluginManager().getPlugin("SQLibrary") == null) {
 				// warn user that sqlibrary wasn't found, defaulting to flat file this time around
 				log.warning(prefix + "SQlibrary was not found and is required for mysql and sqlite database storage.");
 				log.warning(prefix + "Please download it from http://dev.bukkit.org/bukkit-plugins/sqlibrary");
 				log.warning(prefix + "Defaulting to flatfile for now");
 				backend = Backend.FLATFILE;
+			}
 		}
 		
 		// set the backend at this point
@@ -51,7 +52,7 @@ public class NotebookBukkit  extends JavaPlugin {
 			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table"));
 	
 		// register the command executor
-		noteExecutor = new NotebookCommandExecutorBukkit(this);
+		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
 		
 		try {

@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
-	<groupId>ccom.moosemanstudios</groupId>
+	<groupId>com.moosemanstudios</groupId>
 	<artifactId>notebook</artifactId>
-	<version>2.2</version>
+	<version>2.3</version>
 	<name>Notebook</name>
 	<url>http://www.moosemanstudios.com</url>
 	<description>A simple plugin to track notes on players.</description>
@@ -77,7 +77,7 @@
 	<!-- Build configuration -->
 	<build>
 		<defaultGoal>clean package</defaultGoal>
-		<finalName>Notebook-${project.version}</finalName>
+		<finalName>Notebook</finalName>
 
 		<!-- Resources -->
 		<resources>

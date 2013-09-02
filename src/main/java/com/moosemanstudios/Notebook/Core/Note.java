@@ -1,4 +1,4 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Core;
 
 // Note - class designed to handle a note about a player
 public class Note {

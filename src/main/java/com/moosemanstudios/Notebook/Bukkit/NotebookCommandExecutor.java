@@ -1,4 +1,4 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +9,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class NotebookCommandExecutorBukkit implements CommandExecutor {
+import com.moosemanstudios.Notebook.Core.Note;
+import com.moosemanstudios.Notebook.Core.NoteManager;
 
-	private NotebookBukkit plugin;
+public class NotebookCommandExecutor implements CommandExecutor {
+
+	private Notebook plugin;
 	
-	public NotebookCommandExecutorBukkit(NotebookBukkit instance) {
+	public NotebookCommandExecutor(Notebook instance) {
 		plugin = instance;
 	}
 	

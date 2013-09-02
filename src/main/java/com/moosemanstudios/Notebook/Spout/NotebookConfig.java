@@ -1,4 +1,4 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Spout;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import org.spout.cereal.config.ConfigurationHolder;
 import org.spout.cereal.config.ConfigurationHolderConfiguration;
 import org.spout.cereal.config.yaml.YamlConfiguration;
 
-public class NotebookConfigSpout extends ConfigurationHolderConfiguration {
+public class NotebookConfig extends ConfigurationHolderConfiguration {
 	// misc
 	public static final ConfigurationHolder DEBUG = new ConfigurationHolder(true, "debug");
 	public static final ConfigurationHolder BROADCAST_MESSAGE = new ConfigurationHolder(true, "broadcast-message");
@@ -29,7 +29,7 @@ public class NotebookConfigSpout extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder MYSQL_PASSWORD = new ConfigurationHolder("password", "storage", "mysql", "password");
 	public static final ConfigurationHolder MYSQL_DATABASE = new ConfigurationHolder("minecraft", "storage", "mysql", "database");
 	public static final ConfigurationHolder MYSQL_TABLE = new ConfigurationHolder("notes", "storage", "mysql", "table");
-	public NotebookConfigSpout(File dataFolder) {
+	public NotebookConfig(File dataFolder) {
 		super(new YamlConfiguration(new File(dataFolder, "config.yml")));
 	}
 	

@@ -1,4 +1,4 @@
-package com.moosemanstudios.Notebook;
+package com.moosemanstudios.Notebook.Core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -546,7 +546,10 @@ public class NoteManager {
 	 */
 	private void setSQliteProperties(String filename, String table)
 	{
-		sqliteFilename = filename;
+		// make sure the filename doesn't have extension, remove it if it does
+		String newFilename = filename.substring(0, filename.indexOf(".")-1);
+		log.info(newFilename);
+		sqliteFilename = newFilename;
 		sqliteTable = table;
 	}
 	

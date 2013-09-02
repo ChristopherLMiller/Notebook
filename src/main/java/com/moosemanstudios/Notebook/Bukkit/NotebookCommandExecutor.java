@@ -3,6 +3,8 @@ package com.moosemanstudios.Notebook.Bukkit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.h31ix.updater.Updater;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,23 +32,24 @@ public class NotebookCommandExecutor implements CommandExecutor {
 			} else {
 				if (split[0].equalsIgnoreCase("help")) {
 					// display help screen
-					sender.sendMessage(ChatColor.RED + "/note help" + ChatColor.WHITE + ": Display this help screen");
-					sender.sendMessage(ChatColor.RED + "/note version " + ChatColor.WHITE + ": Show plugin version");
+					sender.sendMessage("/note help" + ChatColor.RED + ": Display this help screen");
+					sender.sendMessage("/note version " + ChatColor.RED + ": Show plugin version");
 					
 					if (sender.hasPermission("notebook.add")) {
-						sender.sendMessage(ChatColor.RED + "/note add <player> <note>" + ChatColor.WHITE + ": Add note about specified player");
+						sender.sendMessage("/note add <player> <note>" + ChatColor.RED + ": Add note about specified player");
 					}
 					if (sender.hasPermission("notebook.remove")) {
-						sender.sendMessage(ChatColor.RED + "/note remove <player> <note number>" + ChatColor.WHITE + ": Remove note about specified player");
+						sender.sendMessage("/note remove <player> <note number>" + ChatColor.RED + ": Remove note about specified player");
 					}
 					if (sender.hasPermission("notebook.show")) {
-						sender.sendMessage(ChatColor.RED + "/note show <player>" + ChatColor.WHITE + ": Show notes about specified player");
+						sender.sendMessage("/note show <player>" + ChatColor.RED + ": Show notes about specified player");
 					}
 					if (sender.hasPermission("notebook.list")) {
-						sender.sendMessage(ChatColor.RED + "/note list" + ChatColor.WHITE + ": List all players who have notes");
+						sender.sendMessage("/note list" + ChatColor.RED + ": List all players who have notes");
 					}
 					if (sender.hasPermission("notebook.admin")) {
-						sender.sendMessage(ChatColor.RED + "/note reload" + ChatColor.WHITE + ": Reload the notes file");
+						sender.sendMessage("/note reload" + ChatColor.RED + ": Reload the notes file");
+						sender.sendMessage("/note update" + ChatColor.RED + ": Update plugin");
 					}
 					
 				} else if (split[0].equalsIgnoreCase("version")) {
@@ -85,8 +88,17 @@ public class NotebookCommandExecutor implements CommandExecutor {
 								sender.sendMessage("Note failed to be added");
 							}
 						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.add");
 					}
 					
+				} else if (split[0].equalsIgnoreCase("update")) {
+					if (sender.hasPermission("notebook.admin")) {
+						Updater updater = new Updater(plugin, "Notebook", plugin.pluginFile, Updater.UpdateType.NO_VERSION_CHECK, true);
+						sender.sendMessage(ChatColor.AQUA + "Downloading of update started");
+					} else {
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
+					}
 					
 				} else if (split[0].equalsIgnoreCase("remove")) {
 					// remove note about player
@@ -120,7 +132,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 							sender.sendMessage("Must specify player");
 						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You don't have permission to do that");
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.remove");
 					}
 					
 
@@ -148,7 +160,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 							sender.sendMessage(ChatColor.RED + "Must specify player");
 						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You don't have permission to do that");
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.show");
 					}
 					
 				} else if (split[0].equalsIgnoreCase("list")) {
@@ -166,12 +178,16 @@ public class NotebookCommandExecutor implements CommandExecutor {
 								i++;
 							}
 						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.list");
 					}
 				} else if (split[0].equalsIgnoreCase("reload")) {
 					// reload the file from disk, in case of manual edit
 					if (sender.hasPermission("notebook.admin")) {
 						NoteManager.getInstance().reload();
 						sender.sendMessage("Notebook configuration reloaded");
+					} else {
+						sender.sendMessage(ChatColor.RED + "Missing required permissioN: " + ChatColor.WHITE + "notebook.admin");
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "Unknown command, type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");

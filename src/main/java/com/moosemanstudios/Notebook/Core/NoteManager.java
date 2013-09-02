@@ -547,9 +547,9 @@ public class NoteManager {
 	private void setSQliteProperties(String filename, String table)
 	{
 		// make sure the filename doesn't have extension, remove it if it does
-		String newFilename = filename.substring(0, filename.indexOf(".")-1);
-		log.info(newFilename);
-		sqliteFilename = newFilename;
+		//String newFilename = filename.substring(0, filename.indexOf(".")-1);
+		log.info(filename);
+		sqliteFilename = filename;
 		sqliteTable = table;
 	}
 	

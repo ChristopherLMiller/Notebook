@@ -37,10 +37,10 @@ public class Notebook  extends JavaPlugin {
 		// check on updater info
 		if (updaterAuto && updaterEnabled) {
 			// auto update enabled, go ahead and check!
-			Updater updater = new Updater(this, "Notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
+			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
 		} else if (updaterNotify && updaterEnabled) {
 			// register the listener
-			Updater updater = new Updater(this, "Notebook", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
 			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
 			updateName = updater.getLatestVersionString();
 			updateSize = updater.getFileSize();
@@ -65,7 +65,7 @@ public class Notebook  extends JavaPlugin {
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)
 			NoteManager.getInstance().initFlatFile(getConfig().getString("storage.flatfile.filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
-			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
+			NoteManager.getInstance().initSqlite("notes", getConfig().getString("storage.sqlite.table")); //getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
 			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table"));
 	
@@ -73,7 +73,7 @@ public class Notebook  extends JavaPlugin {
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
 		
-		try {
+		/*try {
 			Metrics metrics = new Metrics(this);
 			
 			Graph graph = metrics.createGraph("Number of note entries");
@@ -87,7 +87,7 @@ public class Notebook  extends JavaPlugin {
 			metrics.start();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		// everything is done, at this point let the player know its enabled.
 		pdfFile = this.getDescription();

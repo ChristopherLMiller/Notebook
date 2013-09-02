@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+
 import org.spout.api.command.annotated.AnnotatedCommandExecutorFactory;
 import org.spout.api.plugin.Plugin;
 import org.spout.cereal.config.ConfigurationException;
@@ -47,8 +49,8 @@ public class Notebook extends Plugin {
 		AnnotatedCommandExecutorFactory.create(new NotebookCommandExecutor(this));
 		
 		// enable metrics TODO: gotta fix so it works with spout
-		/*try {
-			Metrics metrics = new Metrics(this);
+		try {
+			Metrics metrics = new SpoutMetrics("Notebook", this.getDescription().getVersion());
 			
 			Graph graph = metrics.createGraph("Number of note entries");
 			graph.addPlotter(new Metrics.Plotter("Notes") {
@@ -60,7 +62,7 @@ public class Notebook extends Plugin {
 			metrics.start();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 		
 		log.info(prefix + " version " + getDescription().getVersion() + " is enabled");
 	}

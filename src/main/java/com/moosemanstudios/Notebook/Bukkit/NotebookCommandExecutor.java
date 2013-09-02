@@ -94,8 +94,9 @@ public class NotebookCommandExecutor implements CommandExecutor {
 					
 				} else if (split[0].equalsIgnoreCase("update")) {
 					if (sender.hasPermission("notebook.admin")) {
-						Updater updater = new Updater(plugin, "Notebook", plugin.pluginFile, Updater.UpdateType.NO_VERSION_CHECK, true);
-						sender.sendMessage(ChatColor.AQUA + "Downloading of update started");
+						Updater updater = new Updater(plugin, "notebook", plugin.pluginFile, Updater.UpdateType.DEFAULT, true);
+						if (updater.getResult() == updater.getResult().SUCCESS)
+							sender.sendMessage(ChatColor.AQUA + "Download of update successful");
 					} else {
 						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
 					}

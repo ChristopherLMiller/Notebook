@@ -54,7 +54,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 					
 				} else if (split[0].equalsIgnoreCase("version")) {
 					// display plugin version
-					sender.sendMessage(ChatColor.GOLD + plugin.pdfFile.getName() + " Version: " + ChatColor.WHITE + plugin.pdfFile.getVersion());
+					sender.sendMessage(ChatColor.GOLD + "Notebook Version: " + ChatColor.WHITE + plugin.pdfFile.getVersion() + ChatColor.GOLD + " - Author: moose517");
 					
 				} else if (split[0].equalsIgnoreCase("add")) {
 					// add note about player

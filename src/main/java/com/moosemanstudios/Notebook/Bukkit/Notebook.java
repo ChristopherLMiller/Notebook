@@ -18,7 +18,7 @@ public class Notebook  extends JavaPlugin {
 	public Logger log = Logger.getLogger("minecraft");
 	NotebookCommandExecutor noteExecutor;
 	String prefix = "[Notebook]";
-	PluginDescriptionFile pdfFile = null;
+	PluginDescriptionFile pdfFile;
 	Backend backend;
 	Boolean debug = false;
 	Boolean broadcastMessage;
@@ -29,6 +29,8 @@ public class Notebook  extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		pdfFile = this.getDescription();
+		
 		// load the config - creating if not exists
 		loadConfig();
 		
@@ -90,7 +92,6 @@ public class Notebook  extends JavaPlugin {
 		}
 		
 		// everything is done, at this point let the player know its enabled.
-		pdfFile = this.getDescription();
 		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");
 	}
 	

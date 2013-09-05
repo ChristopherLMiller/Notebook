@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import net.h31ix.updater.Updater;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +29,25 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		
 		if (commandName.equalsIgnoreCase("note")) {
 			if (split.length == 0) {
-				sender.sendMessage(ChatColor.RED + "Type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");
+				sender.sendMessage("/note help" + ChatColor.RED + ": Display this help screen");
+				sender.sendMessage("/note version " + ChatColor.RED + ": Show plugin version");
+				
+				if (sender.hasPermission("notebook.add")) {
+					sender.sendMessage("/note add <player> <note>" + ChatColor.RED + ": Add note about specified player");
+				}
+				if (sender.hasPermission("notebook.remove")) {
+					sender.sendMessage("/note remove <player> <note number>" + ChatColor.RED + ": Remove note about specified player");
+				}
+				if (sender.hasPermission("notebook.show")) {
+					sender.sendMessage("/note show <player>" + ChatColor.RED + ": Show notes about specified player");
+				}
+				if (sender.hasPermission("notebook.list")) {
+					sender.sendMessage("/note list" + ChatColor.RED + ": List all players who have notes");
+				}
+				if (sender.hasPermission("notebook.admin")) {
+					sender.sendMessage("/note reload" + ChatColor.RED + ": Reload the notes file");
+					sender.sendMessage("/note update" + ChatColor.RED + ": Update plugin");
+				}
 			} else {
 				if (split[0].equalsIgnoreCase("help")) {
 					// display help screen

@@ -6,23 +6,30 @@ main: com.moosemanstudios.Notebook.Bukkit.Notebook
 softdepend: [SQLibrary]
 commands:
     note:
-        description: generic Notebook command
+        description: generic notebookbook command
 permissions:
-    note.*:
-        description: Give all Notebook related permissions
+    notebookbook.*:
+        description: Give all notebook related permissions
         children:
-            note.add: true
-            note.remove: true
-            note.show: true
-            note.list: true
-            note.admin: true
-    note.add:
+            notebook.add: true
+            notebook.remove: true
+            notebook.show: true
+            notebook.list: true
+            notebook.admin: true
+    notebook.note:
+        description: Give all note related permissions
+        children:
+            notebook.add: true
+            notebook.remove: true
+            notebook.show: true
+            notebook.list: true
+    notebook.add:
         description: Add note about specified player
-    note.remove:
+    notebook.remove:
         description: Remove note about specified player
-    note.show:
+    notebook.show:
         description: Show notes about specified player
-    note.list:
+    notebook.list:
         description: List all players who have notes
-    note.admin:
+    notebook.admin:
         descriptions: Reload the files

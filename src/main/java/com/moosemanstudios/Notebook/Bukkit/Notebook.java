@@ -41,11 +41,8 @@ public class Notebook  extends JavaPlugin {
 			// auto update enabled, go ahead and check!
 			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
 		} else if (updaterNotify && updaterEnabled) {
-			// register the listener
-			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-			updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
-			updateName = updater.getLatestVersionString();
-			updateSize = updater.getFileSize();
+			// register the listener, when a player joins we will check for an update then
+			this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		}
 		
 		// check if SQLibrary is found before proceeding
@@ -163,10 +160,16 @@ public class Notebook  extends JavaPlugin {
 		
 		// updater code
 		updaterEnabled = getConfig().getBoolean("updater.enabled");
-		if (updaterEnabled) {
+		if (updaterEnabled) {			
 			// see if auto or notify are set
 			updaterAuto = getConfig().getBoolean("updater.auto");
 			updaterNotify = getConfig().getBoolean("updater.notify");
+			
+			if (updaterAuto && debug) {
+				log.info(prefix + "Auto updating is enabled");
+			} else if (updaterNotify && debug) {
+				log.info(prefix + "Alerting to updates enabled");
+			}
 			
 			// if both are set then just notify only
 			if (updaterAuto && updaterNotify) {
@@ -206,5 +209,9 @@ public class Notebook  extends JavaPlugin {
 		
 		
 		log.info(prefix + " config loaded successfully");
+	}
+	
+	public File getFileFolder() {
+		return this.getFile();
 	}
 }

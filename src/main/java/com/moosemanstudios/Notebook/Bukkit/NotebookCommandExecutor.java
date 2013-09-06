@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import net.h31ix.updater.Updater;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -7,7 +7,7 @@
 	<!-- Project information -->
 	<groupId>com.moosemanstudios</groupId>
 	<artifactId>notebook</artifactId>
-	<version>2.3.3</version>
+	<version>2.3.4</version>
 	<name>Notebook</name>
 	<url>http://www.moosemanstudios.com</url>
 	<description>A simple plugin to track notes on players.</description>

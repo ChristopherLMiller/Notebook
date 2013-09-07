@@ -72,7 +72,7 @@ public class Notebook  extends JavaPlugin {
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
 		
-		try {
+		/*try {
 			Metrics metrics = new MetricsBukkit(this.getName(), this.getDescription().getVersion());
 			
 			Graph graph = metrics.createGraph("Number of note entries");
@@ -86,7 +86,7 @@ public class Notebook  extends JavaPlugin {
 			metrics.start();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		// everything is done, at this point let the player know its enabled.
 		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");

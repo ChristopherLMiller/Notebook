@@ -1,12 +1,5 @@
 package com.moosemanstudios.Notebook.Core;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -36,9 +29,11 @@ public class NoteManager {
 	String mysqlPassword;
 	String mysqlDatabase;
 	int mysqlPort;
-	String flatFileFilename;
 	String sqliteFilename;
 	String sqliteTable;
+	
+	// new variables
+	FlatFile flatFile;
 	
 	
 	public enum Backend {
@@ -256,34 +251,7 @@ public class NoteManager {
 		
 		// load the hashset from whatever backedn is specified
 		if (currentBackend.equals(Backend.FLATFILE)) {
-			try {
-				BufferedReader input = new BufferedReader(new FileReader(mainDirectory + flatFileFilename));
-				
-				// loop through the file to get all the blocks
-				String line = null;
-				while ((line = input.readLine()) != null) {
-					// split the string up
-					String[] data = line.split(";");
-
-					String player = data[0];
-					String note = data[1];
-					String time = data[2];
-					String poster = data[3];
-					
-					// check that input wasn't malformed
-					if (!(poster == null) || !(player == null) || !(note == null) || !(time == null)) {
-						// good input
-						noteHash.add(new Note(player, poster, note, time));
-					}
-				}
-				
-				input.close();
-				
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			noteHash.addAll(flatFile.getRecords());
 			
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			
@@ -336,16 +304,7 @@ public class NoteManager {
 	 */
 	public Boolean saveRecord(Note note) {
 		if (currentBackend.equals(Backend.FLATFILE)) {
-			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + flatFileFilename, true));
-				out.append(note.getPlayer() + ";" + note.getNote() + ";" + note.getTime() + ";" + note.getPoster());
-				out.newLine();
-				out.close();
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}	
+			return flatFile.saveRecord(note);				
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			try {
 				sqlite.query("INSERT INTO " + getSQLiteTable() + " ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
@@ -376,24 +335,7 @@ public class NoteManager {
 	public Boolean removeRecord(Note note) {
 		if (currentBackend.equals(Backend.FLATFILE)) {
 			// for flatfile easiest method will be to clear the file and rewrite everything
-			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(mainDirectory + flatFileFilename));
-				
-				// loop through the noteHash and output
-				for (Note noteTemp : noteHash) {
-					// check if the current note is the one we want to skip
-					if (!noteTemp.equals(note)) {
-						out.append(noteTemp.getPlayer() + ";" + noteTemp.getNote() + ";" + noteTemp.getTime() + ";" + noteTemp.getPoster());
-						out.newLine();
-					}
-				}
-				
-				out.close();
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
+			return flatFile.removeRecord(note, noteHash);
 		} else if (currentBackend.equals(Backend.SQLITE)) {
 			try {
 				sqlite.query("DELETE FROM " + getSQLiteTable() + " WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
@@ -421,44 +363,18 @@ public class NoteManager {
 	 * @return Return true if file was created
 	 */
 	public Boolean initFlatFile(String filename) {
-		setFlatFileFilename(filename);
-		File file = new File(mainDirectory, getFlatFileFilename());
-		if (!file.exists()) {
-			try { 
-				file.createNewFile();
-				if (debugging) {
-					log.info(prefix + " " + flatFileFilename + " created");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+		flatFile = new FlatFile();
+		
+		if (!flatFile.fileExists()) {
+			if (flatFile.createFile(mainDirectory, filename)) {
+				log.info(prefix + " " + filename + " created successfully");
+			} else {
+				log.severe(prefix + "Unable to create the file: " + filename);
 				return false;
 			}
 		}
-
-		if (debugging) {
-			log.info(prefix + " flatfile successfully loaded");
-		}
 		reload();
-		
-		return false;
-	}
-	
-	/**
-	 * set the local name of the flat file
-	 * @param input filename
-	 */
-	private void setFlatFileFilename(String filename)
-	{
-		flatFileFilename = filename;
-	}
-	
-	/**
-	 * Get the name of the flat file
-	 * @return String - filename
-	 */
-	private String getFlatFileFilename()
-	{
-		return flatFileFilename;
+		return true;
 	}
 
 	/**

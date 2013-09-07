@@ -21,7 +21,6 @@ public class NoteManager {
 	String prefix;
 	Backend currentBackend;
 	String mainDirectory;
-	SQLite sqlite;
 	MySQL mysql;
 	String mysqlTable;
 	String mysqlHost;
@@ -29,11 +28,10 @@ public class NoteManager {
 	String mysqlPassword;
 	String mysqlDatabase;
 	int mysqlPort;
-	String sqliteFilename;
-	String sqliteTable;
-	
+
 	// new variables
 	FlatFile flatFile;
+	SQlite sqlite;
 	
 	
 	public enum Backend {
@@ -263,27 +261,11 @@ public class NoteManager {
 	public void reload() {
 		noteHash.clear();
 		
-		// load the hashset from whatever backedn is specified
-		if (currentBackend.equals(Backend.FLATFILE)) {
+		switch(getBackend()) {
+		case FLATFILE:
 			noteHash.addAll(flatFile.getRecords());
-			
-		} else if (currentBackend.equals(Backend.SQLITE)) {
-			
-			try {
-				String query = "SELECT * FROM " + getSQLiteTable();
-				ResultSet results = sqlite.query(query);
-				while (results.next()) {
-					String player = results.getString("player");
-					String poster = results.getString("poster");
-					String time = results.getString("time");
-					String note = results.getString("note");
-					
-					noteHash.add(new Note(player, poster, note, time));
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else if (currentBackend.equals(Backend.MYSQL)) {
+			break;
+		case MYSQL:
 			try {
 				ResultSet results = mysql.query("SELECT * FROM " + getMySQLTable());
 				while (results.next()) {
@@ -297,6 +279,13 @@ public class NoteManager {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			break;
+		case SQLITE:
+			noteHash.addAll(sqlite.getRecords());
+			break;
+		default:
+			log.severe(prefix + "Invalid backend in reload()");
+			break;
 		}
 		
 		log.info(prefix + " Loaded "  + getNumNotes() +  " notes");
@@ -317,17 +306,11 @@ public class NoteManager {
 	 * @return Return true if note is saved successfully
 	 */
 	public Boolean saveRecord(Note note) {
-		if (currentBackend.equals(Backend.FLATFILE)) {
-			return flatFile.saveRecord(note);				
-		} else if (currentBackend.equals(Backend.SQLITE)) {
-			try {
-				sqlite.query("INSERT INTO " + getSQLiteTable() + " ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		} else if (currentBackend.equals(Backend.MYSQL)) {
+		
+		switch (getBackend()) {
+		case FLATFILE:
+			return flatFile.saveRecord(note);
+		case MYSQL:
 			try {
 				String query = "INSERT INTO " + getMySQLTable() + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
 				mysql.query(query);
@@ -336,8 +319,12 @@ public class NoteManager {
 				e.printStackTrace();
 				return false;
 			}
-		} else {
+		case SQLITE:
+			return sqlite.saveRecord(note);
+		default:
+			log.severe(prefix + "Invalid backend in saveRecord()");
 			return false;
+		
 		}
 	}
 	
@@ -347,18 +334,10 @@ public class NoteManager {
 	 * @return Return true if note was removed
 	 */
 	public Boolean removeRecord(Note note) {
-		if (currentBackend.equals(Backend.FLATFILE)) {
-			// for flatfile easiest method will be to clear the file and rewrite everything
+		switch (getBackend()) {
+		case FLATFILE:
 			return flatFile.removeRecord(note, noteHash);
-		} else if (currentBackend.equals(Backend.SQLITE)) {
-			try {
-				sqlite.query("DELETE FROM " + getSQLiteTable() + " WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		} else if (currentBackend.equals(Backend.MYSQL)) {
+		case MYSQL:
 			try {
 				mysql.query("DELETE FROM " + getMySQLTable() + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
 				return true;
@@ -366,7 +345,10 @@ public class NoteManager {
 				e.printStackTrace();
 				return false;
 			}
-		} else {
+		case SQLITE:
+			return sqlite.removeRecord(note);
+		default:
+			log.severe(prefix + " Invalid backedn in removeRecord()");
 			return false;
 		}
 	}
@@ -380,13 +362,33 @@ public class NoteManager {
 		flatFile = new FlatFile();
 		
 		if (!flatFile.fileExists()) {
-			if (flatFile.createFile(mainDirectory, filename)) {
+			if (flatFile.create(mainDirectory, filename)) {
 				log.info(prefix + " " + filename + " created successfully");
 			} else {
 				log.severe(prefix + "Unable to create the file: " + filename);
 				return false;
 			}
 		}
+		reload();
+		return true;
+	}
+	
+	/**
+	 *  Create SQLite database file and populate initial table
+	 * @return Returns true if SQLite was created successfully
+	 */
+	public Boolean initSqlite(String filename, String table) {
+		sqlite = new SQlite();
+		
+		if (sqlite.create(mainDirectory, filename, log, prefix, table)) {
+			log.info(prefix + " " + filename + " created successfully");
+		} else {
+			log.severe(prefix + "Unsable to create the file: " + filename);
+			return false;
+		}
+		
+		// check that the table exists
+		sqlite.checkTable();
 		reload();
 		return true;
 	}
@@ -446,52 +448,7 @@ public class NoteManager {
 		return mysqlTable;
 	}
 	
-	/**
-	 *  Create SQLite database file and populate initial table
-	 * @return Returns true if SQLite was created successfully
-	 */
-	@SuppressWarnings("deprecation")
-	public Boolean initSqlite(String filename, String table) {
-		setSQliteProperties(filename, table);
-		sqlite = new SQLite(log, prefix, getSQliteFilename(), mainDirectory);
-		
-		// open the connection, which initializes it
-		sqlite.open();
-		
-		// check if the table exists
-		if (!sqlite.checkTable("notes")) {
-			log.info(prefix + " created table notes");
-			String query = "CREATE TABLE " + getSQLiteTable() + " (id INT AUTO_INCREMENT PRIMARY_KEY, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
-			sqlite.createTable(query);
-		}
-		
-		reload();
-		return false;
-	}
-	
-	/**
-	 * Set the sqlite properties
-	 * @param String filename
-	 * @param String table
-	 */
-	private void setSQliteProperties(String filename, String table)
-	{
-		// make sure the filename doesn't have extension, remove it if it does
-		//String newFilename = filename.substring(0, filename.indexOf(".")-1);
-		log.info(filename);
-		sqliteFilename = filename;
-		sqliteTable = table;
-	}
-	
-	private String getSQliteFilename()
-	{
-		return sqliteFilename;
-	}
-	
-	private String getSQLiteTable()
-	{
-		return sqliteTable;
-	}
+
 	
 	/**
 	 * Returns the number of notes note manager knows about.

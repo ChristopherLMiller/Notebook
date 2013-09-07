@@ -64,7 +64,7 @@ public class Notebook  extends JavaPlugin {
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)
 			NoteManager.getInstance().initFlatFile(getConfig().getString("storage.flatfile.filename"));
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
-			NoteManager.getInstance().initSqlite("notes", getConfig().getString("storage.sqlite.table")); //getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
+			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
 			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table"));
 	

@@ -20,7 +20,7 @@ public class FlatFile {
 	 * @param filename The name of the file to hold the notes
 	 * @return If it was created successfully
 	 */
-	public Boolean createFile(String directory, String filename) {
+	public Boolean create(String directory, String filename) {
 		setFileName(filename);
 		setDirectory(directory);
 		

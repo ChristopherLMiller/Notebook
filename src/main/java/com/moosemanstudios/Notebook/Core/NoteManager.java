@@ -100,6 +100,20 @@ public class NoteManager {
 		return currentBackend;
 	}
 	
+	public Boolean switchBackend(Backend backend) {
+		if (backend.equals(getBackend())) {
+			// why would we do anything if we aren't changing anything!
+			return false;
+		} else if (backend == Backend.FLATFILE) {
+			if (flatFile.saveRecords(noteHash)) {
+				setBackend(Backend.FLATFILE);
+				return true;
+			}
+		}
+		// TODO: handle other cases
+		return false;
+	}
+	
 	/**
 	 * Add a note about a player
 	 * @param poster - the person adding the note

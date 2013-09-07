@@ -129,6 +129,11 @@ public class FlatFile {
 		}
 	}
 	
+	/**
+	 * Save a record to the file
+	 * @param note The note to be written to the file
+	 * @return if it was written successfully
+	 */
 	public Boolean saveRecord(Note note) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(getDirectory() + getFileName(), true));
@@ -142,6 +147,24 @@ public class FlatFile {
 		}	
 	}
 	
+	/**
+	 * Save all the records to file
+	 * @param notes HashSet containing all notes
+	 * @return if notes all saved successfully
+	 */
+	public Boolean saveRecords(HashSet<Note> notes) {
+		for (Note note : notes) {
+			saveRecord(note);
+		}
+		return true;
+	}
+	
+	/**
+	 * Remove the specified record from the file
+	 * @param note The note to be removed
+	 * @param notes HashSet containing all notes, required due to way removal is done
+	 * @return If the not was removed successfully
+	 */
 	public Boolean removeRecord(Note note, HashSet<Note> notes) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(getDirectory() + getFileName()));

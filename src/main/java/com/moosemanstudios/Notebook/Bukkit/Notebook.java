@@ -1,16 +1,12 @@
 package com.moosemanstudios.Notebook.Bukkit;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import net.h31ix.updater.Updater;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
-
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 

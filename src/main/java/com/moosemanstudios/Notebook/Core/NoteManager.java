@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import lib.PatPeter.SQLibrary.MySQL;
-import lib.PatPeter.SQLibrary.SQLite;
 
 
 public class NoteManager {
@@ -21,17 +20,11 @@ public class NoteManager {
 	String prefix;
 	Backend currentBackend;
 	String mainDirectory;
-	MySQL mysql;
-	String mysqlTable;
-	String mysqlHost;
-	String mysqlUsername;
-	String mysqlPassword;
-	String mysqlDatabase;
-	int mysqlPort;
 
 	// new variables
 	FlatFile flatFile;
 	SQlite sqlite;
+	Mysql mysql;
 	
 	
 	public enum Backend {
@@ -266,19 +259,7 @@ public class NoteManager {
 			noteHash.addAll(flatFile.getRecords());
 			break;
 		case MYSQL:
-			try {
-				ResultSet results = mysql.query("SELECT * FROM " + getMySQLTable());
-				while (results.next()) {
-					String player = results.getString("player");
-					String poster = results.getString("poster");
-					String time = results.getString("time");
-					String note = results.getString("note");
-					
-					noteHash.add(new Note(player, poster, note, time));
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			noteHash.addAll(mysql.getRecords());
 			break;
 		case SQLITE:
 			noteHash.addAll(sqlite.getRecords());
@@ -311,14 +292,7 @@ public class NoteManager {
 		case FLATFILE:
 			return flatFile.saveRecord(note);
 		case MYSQL:
-			try {
-				String query = "INSERT INTO " + getMySQLTable() + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
-				mysql.query(query);
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
+			return mysql.saveRecord(note);
 		case SQLITE:
 			return sqlite.saveRecord(note);
 		default:
@@ -338,13 +312,7 @@ public class NoteManager {
 		case FLATFILE:
 			return flatFile.removeRecord(note, noteHash);
 		case MYSQL:
-			try {
-				mysql.query("DELETE FROM " + getMySQLTable() + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
+			return mysql.removeRecord(note);
 		case SQLITE:
 			return sqlite.removeRecord(note);
 		default:
@@ -383,12 +351,10 @@ public class NoteManager {
 		if (sqlite.create(mainDirectory, filename, log, prefix, table)) {
 			log.info(prefix + " " + filename + " created successfully");
 		} else {
-			log.severe(prefix + "Unsable to create the file: " + filename);
+			log.severe(prefix + "Unable to create the file: " + filename);
 			return false;
 		}
-		
-		// check that the table exists
-		sqlite.checkTable();
+
 		reload();
 		return true;
 	}
@@ -398,54 +364,18 @@ public class NoteManager {
 	 * 
 	 * @return Returns true if mysql initialization was successful
 	 */
-	@SuppressWarnings("deprecation")
 	public Boolean initMysql(String host, int port, String username, String password, String database, String table) {
-		setMySQLproperties(host, port, username, password, database, table);
-		mysql = new MySQL(log, prefix, getMySQLHost(), getMySQLPort(), getMySQLDatabase(), getMySQLUsername(), getMySQLPassword());
-		mysql.open();
+		mysql = new Mysql();
 		
-		// check if the table exists
-		if (!mysql.checkTable(getMySQLTable())) {
-			log.info(prefix + " created table " + getMySQLTable());
-			String query = "CREATE TABLE IF NOT EXISTS " + getMySQLTable() + " (id INT NOT NULL AUTO_INCREMENT, player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15), PRIMARY KEY (id) );";
-			mysql.createTable(query);
+		if (mysql.create(log, table, host, port, database, username, password, table)) {
+			log.info(prefix + " mysql database created successfully");
+		} else {
+			log.severe(prefix + "Unable to create the mysql database");
+			return false;
 		}
 		
 		reload();
 		return true;		
-	}
-	
-	private void setMySQLproperties(String host, int port, String username, String password, String database, String table)
-	{
-		mysqlHost = host;
-		mysqlUsername = username;
-		mysqlPassword = password;
-		mysqlDatabase = database;
-		mysqlTable = table;
-	}
-	
-	private String getMySQLHost() {
-		return mysqlHost;
-	}
-	
-	private int getMySQLPort() {
-		return mysqlPort;
-	}
-	
-	private String getMySQLDatabase() {
-		return mysqlDatabase;
-	}
-	
-	private String getMySQLUsername() {
-		return mysqlUsername;
-	}
-	
-	private String getMySQLPassword() {
-		return mysqlPassword;
-	}
-	
-	private String getMySQLTable() {
-		return mysqlTable;
 	}
 	
 

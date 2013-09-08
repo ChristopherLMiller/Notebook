@@ -1,6 +1,5 @@
 package com.moosemanstudios.Notebook.Core;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -18,6 +17,7 @@ public class SQlite {
 	private Logger log;
 	private String prefix;
 	
+	@SuppressWarnings("deprecation")
 	public Boolean create(String directory, String filename, Logger log, String prefix, String table) {
 		setDirectory(directory);
 		setFileName(filename);
@@ -33,6 +33,12 @@ public class SQlite {
 			sqlite = new SQLite(getLogger(), getPrefix(), getDirectory(), getFileName(), getExtension());
 		}
 		
+		if (!sqlite.checkTable(getTable())) {
+			log.info(prefix + " created table notes");
+			String query = "CREATE TABLE " + getTable() + " (id INT AUTO_INCREMENT PRIMARY_KEY,  player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
+			sqlite.createTable(query);
+		}
+		
 		return sqlite.open();
 	}
 	
@@ -44,14 +50,6 @@ public class SQlite {
 		}
 	}
 	
-	public Boolean checkTable() {
-		if (!sqlite.checkTable(getTable())) {
-			log.info(prefix + " created table notes");
-			String query = "CREATE TABLE " + getTable() + " (id INT AUTO_INCREMENT PRIMARY_KEY,  player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
-			sqlite.createTable(query);
-		}
-		return true;
-	}
 	public void setDirectory(String directory) {
 		this.directory = directory;
 	}
@@ -105,6 +103,8 @@ public class SQlite {
 		
 		try {
 			String query = "SELECT * FROM " + getTable();
+			if (!sqlite.isOpen()) 
+				sqlite.open();
 			ResultSet results = sqlite.query(query);
 			while (results.next()) {
 				String player = results.getString("player");
@@ -117,14 +117,17 @@ public class SQlite {
 					notes.add(new Note(player, poster, note, time));
 				}
 			}
+			
+			return notes;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
-		
-		return notes;
 	}	
 	public Boolean saveRecord(Note note) {
 		try {
+			if (!sqlite.isOpen()) 
+				sqlite.open();
 			sqlite.query("INSERT INTO " + getTable() + " ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
 			return true;
 		} catch (SQLException e) {
@@ -142,6 +145,8 @@ public class SQlite {
 	
 	public Boolean removeRecord(Note note) {
 		try {
+			if (!sqlite.isOpen()) 
+				sqlite.open();
 			sqlite.query("DELETE FROM " + getTable() + " WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
 			return true;
 		} catch (SQLException e) {

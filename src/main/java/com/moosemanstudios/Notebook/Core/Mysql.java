@@ -37,8 +37,6 @@ public class Mysql {
 	public HashSet<Note> getRecords() {
 		HashSet<Note> notes = new HashSet<Note>();
 		try {
-			if (!mysql.isOpen())
-				mysql.open();
 			ResultSet results = mysql.query("SELECT * FROM " + getTable());
 			while (results.next()) {
 				String player = results.getString("player");
@@ -62,9 +60,6 @@ public class Mysql {
 	public Boolean saveRecord(Note note) {
 		try {
 			String query = "INSERT INTO " + getTable() + " (`player`, `poster`, `note`, `time`) VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');";
-			if (!mysql.isOpen()) {
-				mysql.open();
-			}
 			mysql.query(query);
 			return true;
 		} catch (SQLException e) {
@@ -82,8 +77,6 @@ public class Mysql {
 	
 	public Boolean removeRecord(Note note) {
 		try {
-			if (!mysql.isOpen())
-				mysql.open();
 			mysql.query("DELETE FROM " + getTable() + " WHERE `player`='" + note.getPlayer() + "' AND `poster`='" + note.getPoster() + "' AND `note`='" + note.getNote() + "' AND `time`='" + note.getTime() + "'");
 			return true;
 		} catch (SQLException e) {

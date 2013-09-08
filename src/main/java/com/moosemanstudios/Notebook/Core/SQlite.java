@@ -32,14 +32,16 @@ public class SQlite {
 		} else {
 			sqlite = new SQLite(getLogger(), getPrefix(), getDirectory(), getFileName(), getExtension());
 		}
+
+		sqlite.open();
 		
 		if (!sqlite.checkTable(getTable())) {
 			log.info(prefix + " created table notes");
 			String query = "CREATE TABLE " + getTable() + " (id INT AUTO_INCREMENT PRIMARY_KEY,  player VARCHAR(16), poster VARCHAR(16), note VARCHAR(255), time VARCHAR(15));";
-			sqlite.createTable(query);
+			return sqlite.createTable(query);
+		} else {
+			return true;
 		}
-		
-		return sqlite.open();
 	}
 	
 	public void checkFileName() {
@@ -103,8 +105,6 @@ public class SQlite {
 		
 		try {
 			String query = "SELECT * FROM " + getTable();
-			if (!sqlite.isOpen()) 
-				sqlite.open();
 			ResultSet results = sqlite.query(query);
 			while (results.next()) {
 				String player = results.getString("player");
@@ -126,8 +126,6 @@ public class SQlite {
 	}	
 	public Boolean saveRecord(Note note) {
 		try {
-			if (!sqlite.isOpen()) 
-				sqlite.open();
 			sqlite.query("INSERT INTO " + getTable() + " ('player', 'poster', 'note', 'time') VALUES ('" + note.getPlayer() + "', '" + note.getPoster() + "', '" + note.getNote() + "', '" + note.getTime() + "');");
 			return true;
 		} catch (SQLException e) {
@@ -145,8 +143,6 @@ public class SQlite {
 	
 	public Boolean removeRecord(Note note) {
 		try {
-			if (!sqlite.isOpen()) 
-				sqlite.open();
 			sqlite.query("DELETE FROM " + getTable() + " WHERE player='" + note.getPlayer() + "' AND poster='" + note.getPoster() + "' AND note='" + note.getNote() + "' AND time='" + note.getTime() + "'");
 			return true;
 		} catch (SQLException e) {

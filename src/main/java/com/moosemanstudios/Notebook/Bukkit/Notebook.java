@@ -26,6 +26,7 @@ public class Notebook  extends JavaPlugin {
 	String updateName = "";
 	Long updateSize = 0L;
 	public File pluginFile;
+	public Boolean sqlibraryFound;
 	
 	@Override
 	public void onEnable() {
@@ -39,6 +40,7 @@ public class Notebook  extends JavaPlugin {
 		// check on updater info
 		if (updaterAuto && updaterEnabled) {
 			// auto update enabled, go ahead and check!
+			@SuppressWarnings("unused")
 			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
 		} else if (updaterNotify && updaterEnabled) {
 			// register the listener, when a player joins we will check for an update then
@@ -46,14 +48,18 @@ public class Notebook  extends JavaPlugin {
 		}
 		
 		// check if SQLibrary is found before proceeding
-		if ((backend == Backend.SQLITE) || (backend == Backend.MYSQL)) {
-			if (getServer().getPluginManager().getPlugin("SQLibrary") == null) {
+		if (getServer().getPluginManager().getPlugin("SQLibrary") == null) {
+			sqlibraryFound = false;
+				
+			if ((backend == Backend.SQLITE) || (backend == Backend.MYSQL)) {
 				// warn user that sqlibrary wasn't found, defaulting to flat file this time around
 				log.warning(prefix + "SQlibrary was not found and is required for mysql and sqlite database storage.");
 				log.warning(prefix + "Please download it from http://dev.bukkit.org/bukkit-plugins/sqlibrary");
 				log.warning(prefix + "Defaulting to flatfile for now");
 				backend = Backend.FLATFILE;
 			}
+		} else {
+			sqlibraryFound = true;
 		}
 		
 		// set the backend at this point
@@ -177,6 +183,9 @@ public class Notebook  extends JavaPlugin {
 				updaterAuto = false;
 				updaterNotify = true;
 			}
+		} else {
+			updaterAuto = false;
+			updaterNotify = false;
 		}
 		
 		// check backend types, make sure only ones enabled

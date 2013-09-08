@@ -1,16 +1,11 @@
 package com.moosemanstudios.Notebook.Core;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
-
-import lib.PatPeter.SQLibrary.MySQL;
-
 
 public class NoteManager {
 	private static NoteManager instance = null;
@@ -22,9 +17,9 @@ public class NoteManager {
 	String mainDirectory;
 
 	// new variables
-	FlatFile flatFile;
-	SQlite sqlite;
-	Mysql mysql;
+	FlatFile flatFile= new FlatFile();
+	SQlite sqlite = new SQlite();
+	Mysql mysql = new Mysql();
 	
 	
 	public enum Backend {
@@ -78,9 +73,14 @@ public class NoteManager {
 	 * Set the backend to a specific type
 	 * @param backend - the backend type to use
 	 */
-	public void setBackend(Backend backend) {
+	public Boolean setBackend(Backend backend) {
 		// set the backend type based on the input
 		currentBackend = backend;
+		
+		if (currentBackend == backend)
+			return true;
+		else 
+			return false;
 	}
 	
 	/**
@@ -98,6 +98,16 @@ public class NoteManager {
 		} else if (backend == Backend.FLATFILE) {
 			if (flatFile.saveRecords(noteHash)) {
 				setBackend(Backend.FLATFILE);
+				return true;
+			}
+		} else if (backend == Backend.MYSQL) {
+			if (mysql.saveRecords(noteHash)) {
+				setBackend(Backend.MYSQL);
+				return true;
+			}
+		} else if (backend == Backend.SQLITE) {
+			if (sqlite.saveRecords(noteHash)) {
+				setBackend(Backend.SQLITE);
 				return true;
 			}
 		}
@@ -327,8 +337,6 @@ public class NoteManager {
 	 * @return Return true if file was created
 	 */
 	public Boolean initFlatFile(String filename) {
-		flatFile = new FlatFile();
-		
 		if (!flatFile.fileExists()) {
 			if (flatFile.create(mainDirectory, filename)) {
 				log.info(prefix + " " + filename + " created successfully");
@@ -346,8 +354,6 @@ public class NoteManager {
 	 * @return Returns true if SQLite was created successfully
 	 */
 	public Boolean initSqlite(String filename, String table) {
-		sqlite = new SQlite();
-		
 		if (sqlite.create(mainDirectory, filename, log, prefix, table)) {
 			log.info(prefix + " " + filename + " created successfully");
 		} else {
@@ -365,8 +371,6 @@ public class NoteManager {
 	 * @return Returns true if mysql initialization was successful
 	 */
 	public Boolean initMysql(String host, int port, String username, String password, String database, String table) {
-		mysql = new Mysql();
-		
 		if (mysql.create(log, table, host, port, database, username, password, table)) {
 			log.info(prefix + " mysql database created successfully");
 		} else {

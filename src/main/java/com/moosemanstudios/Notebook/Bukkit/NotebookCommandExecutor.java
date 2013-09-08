@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.moosemanstudios.Notebook.Core.Note;
 import com.moosemanstudios.Notebook.Core.NoteManager;
+import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 
 public class NotebookCommandExecutor implements CommandExecutor {
 
@@ -22,6 +23,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		plugin = instance;
 	}
 	
+	@SuppressWarnings("static-access")
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		String[] split = args;
 		String commandName = cmd.getName().toLowerCase();
@@ -46,6 +48,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 				if (sender.hasPermission("notebook.admin")) {
 					sender.sendMessage("/note reload" + ChatColor.RED + ": Reload the notes file");
 					sender.sendMessage("/note update" + ChatColor.RED + ": Update plugin");
+					sender.sendMessage("/note backend <flatfile/sqlite/mysql" + ChatColor.RED + ": Change backend storage type");
 				}
 			} else {
 				if (split[0].equalsIgnoreCase("help")) {
@@ -68,6 +71,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 					if (sender.hasPermission("notebook.admin")) {
 						sender.sendMessage("/note reload" + ChatColor.RED + ": Reload the notes file");
 						sender.sendMessage("/note update" + ChatColor.RED + ": Update plugin");
+						sender.sendMessage("/note backend <flatfile/sqlite/mysql" + ChatColor.RED + ": Change backend storage type");
 					}
 					
 				} else if (split[0].equalsIgnoreCase("version")) {
@@ -206,7 +210,67 @@ public class NotebookCommandExecutor implements CommandExecutor {
 						NoteManager.getInstance().reload();
 						sender.sendMessage("Notebook configuration reloaded");
 					} else {
-						sender.sendMessage(ChatColor.RED + "Missing required permissioN: " + ChatColor.WHITE + "notebook.admin");
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
+					}
+				} else if (split[0].equalsIgnoreCase("backend")) {
+					if (sender.hasPermission("notebook.admin")) {
+						if (split.length != 1) {
+							// change the current backend and run command to save all current records out to that new backend
+							if (split[1].equalsIgnoreCase("flatfile")) {
+								// testing code but should be final
+								if (NoteManager.getInstance().initFlatFile(plugin.getConfig().getString("storage.flatfile.filename"))) {
+									if (NoteManager.getInstance().switchBackend(Backend.FLATFILE)) {
+										plugin.getConfig().set("storage.flatfile.enabled", true);
+										plugin.getConfig().set("storage.sqlite.enabled", false);
+										plugin.getConfig().set("storage.mysql.enabled", false);
+										plugin.saveConfig();
+										sender.sendMessage("Backend switched successfully");
+									} else 
+										sender.sendMessage("Error switching backend types");
+								} else
+									sender.sendMessage("Unable to initialize flat file storage");
+							} else if (split[1].equalsIgnoreCase("mysql") || split[1].equalsIgnoreCase("sqlite")) {
+								if (plugin.sqlibraryFound) {
+									if (split[1].equalsIgnoreCase("mysql")) {
+										if (NoteManager.getInstance().initMysql(plugin.getConfig().getString("storage.mysql.host"), plugin.getConfig().getInt("storage.mysql.port"), plugin.getConfig().getString("storage.mysql.username"), plugin.getConfig().getString("storage.mysql.password"), plugin.getConfig().getString("storage.mysql.database"), plugin.getConfig().getString("storage.mysql.table"))) {
+											if (NoteManager.getInstance().switchBackend(Backend.MYSQL)) {
+												plugin.getConfig().set("storage.flatfile.enabled", false);
+												plugin.getConfig().set("storage.sqlite.enabled", false);
+												plugin.getConfig().set("storage.mysql.enabled", true);
+												plugin.saveConfig();
+												sender.sendMessage("Backend switched successfully");
+											} else {
+												sender.sendMessage("Error switching backend types");
+											}
+										} else {
+											sender.sendMessage("Unable to initialize MySQL storage");
+										}
+									} else if (split[1].equalsIgnoreCase("sqlite")) {
+										if (NoteManager.getInstance().initSqlite(plugin.getConfig().getString("storage.sqlite.filename"), plugin.getConfig().getString("storage.sqlite.table"))) {
+											if (NoteManager.getInstance().switchBackend(Backend.SQLITE)) {
+												plugin.getConfig().set("storage.flatfile.enabled", false);
+												plugin.getConfig().set("storage.sqlite.enabled", true);
+												plugin.getConfig().set("storage.mysql.enabled", false);
+												plugin.saveConfig();
+												sender.sendMessage("Backend switched successfully");
+											} else {
+												sender.sendMessage("Error switching backend types");
+											}
+										} else {
+											sender.sendMessage("Unable to initialize SQLite storage");
+										}
+									}
+								} else {
+									sender.sendMessage(ChatColor.RED + "plugin SQLibrary not found and is required for sqlite and mysql storage");
+								}
+							} else {
+								sender.sendMessage(ChatColor.RED + "Invalid backend specified");
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "Must specify backend type to change to");
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "Unknown command, type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");

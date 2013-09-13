@@ -17,8 +17,13 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerLoginEvent event) {
+		event.getPlayer().sendMessage(ChatColor.RED+ "are you getting here");
+		
 		Player player = event.getPlayer();
 		if (player.hasPermission("notebook.admin")) {
+			// test line
+			player.sendMessage(ChatColor.RED + "THIS IS A TEST OF THE MOOSE ALERT YSSTEM");
+			
 			// go ahead and check if there is something newer
 			Updater updater = new Updater(plugin, "notebook", plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
 			

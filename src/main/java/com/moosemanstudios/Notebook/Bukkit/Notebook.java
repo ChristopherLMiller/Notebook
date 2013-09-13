@@ -40,6 +40,9 @@ public class Notebook  extends JavaPlugin {
 			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
 		} else if (updaterNotify && updaterEnabled) {
 			// register the listener, when a player joins we will check for an update then
+			if (debug) {
+				log.info(prefix + " Notifying players as they login if an update is found");
+			}
 			this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 		}
 		

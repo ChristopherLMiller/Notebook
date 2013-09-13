@@ -97,7 +97,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 										// see if the player is the send, if so skip them
 										if (!player.getName().equalsIgnoreCase(sender.getName())) {
 											// now see if the player has the permission node
-											if (player.hasPermission("notebook.note")) {
+											if (player.hasPermission("notebook.add")) {
 												player.sendMessage(sender.getName() + " submitted note about " + split[1]);
 											}
 										}
@@ -137,7 +137,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 										for (Player player : players) {
 											if (!player.getName().equalsIgnoreCase(sender.getName())) {
 												//now see if the player has the permission node
-												if (player.hasPermission("notebook.note")) {
+												if (player.hasPermission("notebook.remove")) {
 													player.sendMessage(sender.getName() + " removed note about player " + split[1]);
 												}
 											}

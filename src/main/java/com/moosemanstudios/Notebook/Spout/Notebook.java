@@ -39,7 +39,7 @@ public class Notebook extends Plugin {
 		}
 		
 		NoteManager.getInstance().setBackend(backend);
-		NoteManager.getInstance().init();
+		NoteManager.getInstance().init(this.getDataFolder().toString());
 		
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE) NoteManager.getInstance().initFlatFile(config.FLATFILE_FILENAME.getString());
 		if (NoteManager.getInstance().getBackend() == Backend.SQLITE) NoteManager.getInstance().initSqlite(config.SQLITE_FILENAME.getString(), config.SQLITE_TABLE.getString());

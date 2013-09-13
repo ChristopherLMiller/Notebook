@@ -60,7 +60,7 @@ public class Notebook  extends JavaPlugin {
 		
 		// set the backend at this point
 		NoteManager.getInstance().setBackend(backend);
-		NoteManager.getInstance().init();
+		NoteManager.getInstance().init(this.getDataFolder().toString());
 		
 		// init based on backend method currently set
 		if (NoteManager.getInstance().getBackend() == Backend.FLATFILE)

@@ -1,5 +1,6 @@
 package com.moosemanstudios.Notebook.Core;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public class NoteManager {
 	/**
 	 * Create the hashset, setup any other needed essentials
 	 */
-	public void init() {
+	public void init(String mainDirectory) {
 		// check for valid noteHash
 		if (noteHash == null) {
 			noteHash = new HashSet<Note>();
@@ -66,7 +67,7 @@ public class NoteManager {
 		debugging = true;
 		log = Logger.getLogger("minecraft");
 		prefix = "[Notebook]";
-		mainDirectory = "plugins/Notebook/";
+		this.mainDirectory = mainDirectory + File.separator;
 	}
 	
 	/**

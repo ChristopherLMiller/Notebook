@@ -115,14 +115,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 					}
 					
 				} else if (split[0].equalsIgnoreCase("update")) {
-					if (sender.hasPermission("notebook.admin")) {
-						Updater updater = new Updater(plugin, "notebook", plugin.pluginFile, Updater.UpdateType.DEFAULT, true);
-						if (updater.getResult() == updater.getResult().SUCCESS)
-							sender.sendMessage(ChatColor.AQUA + "Download of update successful");
-					} else {
-						sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
-					}
-					
+					update(sender);	
 				} else if (split[0].equalsIgnoreCase("remove")) {
 					// remove note about player
 					if (sender.hasPermission("notebook.remove")) {
@@ -292,5 +285,49 @@ public class NotebookCommandExecutor implements CommandExecutor {
 			result = result + " " + input[i];
 		}
 		return result;
+	}
+	
+	public Boolean update(CommandSender sender) {
+		if (sender.hasPermission("notebook.admin")) {
+			// at this point check if there is actually an update
+			Updater updater = new Updater(plugin, "notebook", plugin.pluginFile, Updater.UpdateType.NO_DOWNLOAD, false);
+			if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
+				// notify user that update is downloading
+				sender.sendMessage(ChatColor.AQUA + "Starting download of Notebook " + updater.getLatestVersionString());
+				updater = new Updater(plugin, "notebook", plugin.pluginFile, Updater.UpdateType.DEFAULT, true);
+				
+				switch (updater.getResult()) {
+				case FAIL_BADSLUG:
+					sender.sendMessage(ChatColor.AQUA + "Slug was bad, report this to moose517 on dev.bukkit.org");
+					break;
+				case FAIL_DBO:
+					sender.sendMessage(ChatColor.AQUA + "Dev.bukkit.org couldn't be contacted, try again later");
+					break;
+				case FAIL_DOWNLOAD:
+					sender.sendMessage(ChatColor.AQUA + "File download failed");
+					break;
+				case FAIL_NOVERSION:
+					sender.sendMessage(ChatColor.AQUA + "Unable to check version on dev.bukkit.org, notify moose517");
+					break;
+				case NO_UPDATE:
+					break;
+				case SUCCESS:
+					sender.sendMessage(ChatColor.AQUA + "Update downloaded successfully, restart server to apply update");
+					break;
+				case UPDATE_AVAILABLE:
+					sender.sendMessage(ChatColor.AQUA + "Update found but not downloaded");
+					break;
+				default:
+					sender.sendMessage(ChatColor.RED + "Shoudn't have had this happen, contact moose517");
+					break;
+				}
+			} else {
+				sender.sendMessage(ChatColor.AQUA + "No updates found");
+			}
+		} else {
+			sender.sendMessage(ChatColor.RED+  "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
+		}
+		
+		return true;
 	}
 }

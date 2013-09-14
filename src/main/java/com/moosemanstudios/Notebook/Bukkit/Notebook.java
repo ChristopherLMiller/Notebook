@@ -7,6 +7,7 @@ import net.h31ix.updater.Updater;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 
@@ -33,17 +34,17 @@ public class Notebook  extends JavaPlugin {
 		
 		pluginFile = this.getFile();
 		
-		// check on updater info
-		if (updaterAuto && updaterEnabled) {
-			// auto update enabled, go ahead and check!
-			@SuppressWarnings("unused")
-			Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
-		} else if (updaterNotify && updaterEnabled) {
-			// register the listener, when a player joins we will check for an update then
-			if (debug) {
-				log.info(prefix + " Notifying players as they login if an update is found");
+		// check updater settings
+		if (updaterEnabled) {
+			if (updaterAuto) {
+				Updater updater = new Updater(this, "glownightlight", this.getFile(), Updater.UpdateType.DEFAULT, true);
+				if (updater.getResult() == Updater.UpdateResult.SUCCESS)
+				log.info(prefix + "update downloaded successfully, restart server to apply update");
 			}
-			this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+			if (updaterNotify) {
+				log.info(prefix + "Notifying admins as they login if update found");
+				this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+			}
 		}
 		
 		// check if SQLibrary is found before proceeding
@@ -165,26 +166,15 @@ public class Notebook  extends JavaPlugin {
 		
 		// updater code
 		updaterEnabled = getConfig().getBoolean("updater.enabled");
-		if (updaterEnabled) {			
-			// see if auto or notify are set
-			updaterAuto = getConfig().getBoolean("updater.auto");
-			updaterNotify = getConfig().getBoolean("updater.notify");
-			
-			if (updaterAuto && debug) {
-				log.info(prefix + "Auto updating is enabled");
-			} else if (updaterNotify && debug) {
-				log.info(prefix + "Alerting to updates enabled");
-			}
-			
-			// if both are set then just notify only
-			if (updaterAuto && updaterNotify) {
-				log.info(prefix + "Both notify and auto update of updates enabled.  Only notifying for now");
-				updaterAuto = false;
-				updaterNotify = true;
-			}
-		} else {
-			updaterAuto = false;
-			updaterNotify = false;
+		updaterAuto = getConfig().getBoolean("updater.auto");
+		updaterNotify = getConfig().getBoolean("updater.notify");
+		if (debug) {
+			if (updaterEnabled)
+				log.info(prefix + "Updater enabled");
+			if (updaterAuto)
+				log.info(prefix + "Auto updating enabled");
+			if (updaterNotify)
+				log.info(prefix + "notifying on update");
 		}
 		
 		// check backend types, make sure only ones enabled

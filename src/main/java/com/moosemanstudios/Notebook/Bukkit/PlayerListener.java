@@ -24,7 +24,7 @@ public class PlayerListener implements Listener {
 			
 			if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && plugin.updaterNotify) {
 				// update available, let the player know about it.
-				player.sendMessage(ChatColor.AQUA + "An update is available: " + updater.getLatestVersionString() + "(" + updater.getFileSize() + " bytes)");
+				player.sendMessage(ChatColor.AQUA + "An update is available for Notebook: " + updater.getLatestVersionString() + "(" + updater.getFileSize() + " bytes)");
 				player.sendMessage(ChatColor.RED + "Type " + ChatColor.WHITE + "/note update" + ChatColor.RED + " to update");
 			}
 		}

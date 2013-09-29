@@ -28,11 +28,10 @@ public class Notebook  extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		pdfFile = this.getDescription();
+		pluginFile = this.getFile();
 		
 		// load the config - creating if not exists
 		loadConfig();
-		
-		pluginFile = this.getFile();
 		
 		// check updater settings
 		if (updaterEnabled) {
@@ -43,7 +42,7 @@ public class Notebook  extends JavaPlugin {
 			}
 			if (updaterNotify) {
 				log.info(prefix + "Notifying admins as they login if update found");
-				this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+				this.getServer().getPluginManager().registerEvents(new UpdaterPlayerListener(this), this);
 			}
 		}
 		

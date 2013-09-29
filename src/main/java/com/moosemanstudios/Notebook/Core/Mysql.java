@@ -20,6 +20,14 @@ public class Mysql {
 	
 	@SuppressWarnings("deprecation")
 	public Boolean create(Logger log, String prefix, String host, int port, String database, String username, String password, String table) {
+		setLogger(log);
+		setPrefix(prefix);
+		setHost(host);
+		setPort(port);
+		setDatabase(database);
+		setUsername(username);
+		setPassword(password);
+		setTable(table);
 		
 		mysql = new MySQL(log, prefix, getHost(), getPort(), getDatabase(), getUsername(), getPassword());
 		mysql.open();

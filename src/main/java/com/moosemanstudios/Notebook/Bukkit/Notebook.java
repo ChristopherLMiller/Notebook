@@ -1,12 +1,15 @@
 package com.moosemanstudios.Notebook.Bukkit;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import net.h31ix.updater.Updater;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
 
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
@@ -36,12 +39,12 @@ public class Notebook  extends JavaPlugin {
 		// check updater settings
 		if (updaterEnabled) {
 			if (updaterAuto) {
-				Updater updater = new Updater(this, "glownightlight", this.getFile(), Updater.UpdateType.DEFAULT, true);
+				Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
 				if (updater.getResult() == Updater.UpdateResult.SUCCESS)
-				log.info(prefix + "update downloaded successfully, restart server to apply update");
+				log.info(prefix + " Update downloaded successfully, restart server to apply update");
 			}
 			if (updaterNotify) {
-				log.info(prefix + "Notifying admins as they login if update found");
+				log.info(prefix + " Notifying admins as they login if update found");
 				this.getServer().getPluginManager().registerEvents(new UpdaterPlayerListener(this), this);
 			}
 		}
@@ -77,7 +80,7 @@ public class Notebook  extends JavaPlugin {
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
 		
-		/*try {
+		try {
 			Metrics metrics = new MetricsBukkit(this.getName(), this.getDescription().getVersion());
 			
 			Graph graph = metrics.createGraph("Number of note entries");
@@ -91,8 +94,8 @@ public class Notebook  extends JavaPlugin {
 			metrics.start();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
-		
+		}
+	
 		// everything is done, at this point let the player know its enabled.
 		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");
 	}
@@ -169,11 +172,11 @@ public class Notebook  extends JavaPlugin {
 		updaterNotify = getConfig().getBoolean("updater.notify");
 		if (debug) {
 			if (updaterEnabled)
-				log.info(prefix + "Updater enabled");
+				log.info(prefix + " Updater enabled");
 			if (updaterAuto)
-				log.info(prefix + "Auto updating enabled");
+				log.info(prefix + " Auto updating enabled");
 			if (updaterNotify)
-				log.info(prefix + "notifying on update");
+				log.info(prefix + " Notifying on update");
 		}
 		
 		// check backend types, make sure only ones enabled

@@ -91,6 +91,14 @@ public class Notebook  extends JavaPlugin {
 				}
 			});
 			
+			Graph graph2 = metrics.createGraph("Backend type");
+			graph2.addPlotter(new Metrics.Plotter(NoteManager.getInstance().getBackend().toString()) {
+				@Override
+				public int getValue() {
+					return 1;
+				}
+			});
+			
 			metrics.start();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -188,17 +196,21 @@ public class Notebook  extends JavaPlugin {
 		if (i == 0) {
 			log.severe(prefix + "At least one storage method must be enabled.  Defaulting to flatfile");
 			getConfig().set("storage.flatfile.enabled", true);
+			saveConfig();
 		}
 		if (i != 1) {
 			log.severe(prefix + "More than one storage method enabled, only one can be used at a time.");
 			
 			// find the first one thats enabled and enable it only
 			if (getConfig().getBoolean("storage.flatfile.enabled")) {
+				getConfig().set("storage.sqlite.enabled", false);
 				getConfig().set("storage.mysql.enabled", false);
+				saveConfig();
 				log.severe(prefix + "Enabling flatfile only");
 			}
 			if (getConfig().getBoolean("storage.sqlite.enabled")) {
 				getConfig().set("storage.mysql.enabled", false);
+				saveConfig();
 				log.severe(prefix + "Enabling sqlite only");
 			}
 		}

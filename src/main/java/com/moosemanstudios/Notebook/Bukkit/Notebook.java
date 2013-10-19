@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import net.h31ix.updater.Updater;
+import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,7 +39,7 @@ public class Notebook  extends JavaPlugin {
 		// check updater settings
 		if (updaterEnabled) {
 			if (updaterAuto) {
-				Updater updater = new Updater(this, "notebook", this.getFile(), Updater.UpdateType.DEFAULT, true);
+				Updater updater = new Updater(this, 35179, this.getFile(), Updater.UpdateType.DEFAULT, true);
 				if (updater.getResult() == Updater.UpdateResult.SUCCESS)
 				log.info(prefix + " Update downloaded successfully, restart server to apply update");
 			}

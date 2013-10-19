@@ -3,7 +3,7 @@ package com.moosemanstudios.Notebook.Bukkit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.h31ix.updater.Updater;
+import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,7 +24,6 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		plugin = instance;
 	}
 	
-	@SuppressWarnings("static-access")
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		String[] split = args;
 		String commandName = cmd.getName().toLowerCase();
@@ -226,14 +225,14 @@ public class NotebookCommandExecutor implements CommandExecutor {
 	public void update() {
 		if (sender.hasPermission("notebook.admin")) {
 			if (plugin.updaterEnabled) { 
-				Updater updater = new Updater(plugin, "Notebook", plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
+				Updater updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
 				if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
-					sender.sendMessage(ChatColor.AQUA + "Update found, starting download: " + updater.getLatestVersionString() + "(" + updater.getFileSize() + "bytes)");
-					updater = new Updater(plugin, "Notebook", plugin.getFileFolder(), Updater.UpdateType.DEFAULT, true);
+					sender.sendMessage(ChatColor.AQUA + "Update found, starting download: " + updater.getLatestName());
+					updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.DEFAULT, true);
 					
 					switch (updater.getResult()) {
-					case FAIL_BADSLUG:
-						sender.sendMessage(ChatColor.AQUA + "Slug was bad, report this to moose517 on dev.bukkit.org");
+					case FAIL_BADID:
+						sender.sendMessage(ChatColor.AQUA + "ID was bad, report this to moose517 on dev.bukkit.org");
 						break;
 					case FAIL_DBO:
 						sender.sendMessage(ChatColor.AQUA + "Dev.bukkit.org couldn't be contacted, try again later");

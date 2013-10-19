@@ -1,6 +1,7 @@
 package com.moosemanstudios.Notebook.Bukkit;
 
-import net.h31ix.updater.Updater;
+
+import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,10 +22,10 @@ public class UpdaterPlayerListener implements Listener {
 		Player player=  event.getPlayer();
 		
 		if (player.hasPermission("glownightlight.admin")) {
-			Updater updater = new Updater(plugin, "glownightlight", plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
+			Updater updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
 			
 			if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && plugin.updaterNotify && plugin.updaterEnabled) {
-				player.sendMessage(ChatColor.AQUA + "An update is avaiable for GlowNightLight: " + updater.getLatestVersionString() + "(" + updater.getFileSize() + " bytes");
+				player.sendMessage(ChatColor.AQUA + "An update is avaiable for GlowNightLight: " + updater.getLatestName());
 				player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/gnl update" + ChatColor.AQUA + " to update");
 			}
 		}

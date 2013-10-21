@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import net.gravitydevelopment.updater.Updater;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -92,7 +93,7 @@ public class Notebook  extends JavaPlugin {
 			});
 			
 			Graph graph2 = metrics.createGraph("Backend type");
-			graph2.addPlotter(new Metrics.Plotter(NoteManager.getInstance().getBackend().toString()) {
+			graph2.addPlotter(new Metrics.Plotter(NoteManager.getInstance().getBackend().toString().toLowerCase()) {
 				@Override
 				public int getValue() {
 					return 1;

@@ -30,7 +30,7 @@ public class MetricsBukkit extends Metrics {
 
 	@Override
 	public String getFullServerVersion() {
-		return "Bukkit";
+		return Bukkit.getName();
 	}
 
 	@Override

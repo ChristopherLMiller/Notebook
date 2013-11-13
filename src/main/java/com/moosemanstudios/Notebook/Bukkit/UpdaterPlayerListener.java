@@ -21,12 +21,12 @@ public class UpdaterPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player=  event.getPlayer();
 		
-		if (player.hasPermission("glownightlight.admin")) {
+		if (player.hasPermission("notebook.admin")) {
 			Updater updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
 			
 			if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE && plugin.updaterNotify && plugin.updaterEnabled) {
-				player.sendMessage(ChatColor.AQUA + "An update is avaiable for GlowNightLight: " + updater.getLatestName());
-				player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/gnl update" + ChatColor.AQUA + " to update");
+				player.sendMessage(ChatColor.AQUA + "An update is avaiable for Notebook: " + updater.getLatestName());
+				player.sendMessage(ChatColor.AQUA + "Type " + ChatColor.WHITE + "/note update" + ChatColor.AQUA + " to update");
 			}
 		}
 	}

@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import net.gravitydevelopment.updater.Updater;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -82,7 +81,7 @@ public class Notebook  extends JavaPlugin {
 		getCommand("note").setExecutor(noteExecutor);
 		
 		try {
-			Metrics metrics = new MetricsBukkit(this.getName(), this.getDescription().getVersion());
+			Metrics metrics = new Metrics(this);
 			
 			Graph graph = metrics.createGraph("Number of note entries");
 			graph.addPlotter(new Metrics.Plotter("Notes") {

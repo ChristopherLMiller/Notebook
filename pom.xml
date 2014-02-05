@@ -14,7 +14,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkitVersion>1.6.4-R2.0</bukkitVersion>
+		<bukkitVersion>1.7.2-R0.2</bukkitVersion>
 	</properties>
 
 	<!-- Repository locations -->
@@ -26,6 +26,10 @@
 		<repository>
 			<id>Plugin Metrics</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
+		</repository>
+		<repository>
+			<id>Updater</id>
+			<url>http://repo.gravitydevelopment.net</url>
 		</repository>
 	</repositories>
 
@@ -49,6 +53,11 @@
 			<version>4.2</version>
 			<systemPath>${basedir}/lib/SQLibrary.jar</systemPath>
 			<scope>system</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.gravitydevelopment.updater</groupId>
+			<artifactId>updater</artifactId>
+			<version>2.1</version>
 		</dependency>
 	</dependencies>
 

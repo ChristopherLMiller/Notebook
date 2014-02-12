@@ -19,6 +19,8 @@ public class UpdaterPlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		// Note: this listener is never registered if updaterNotify is false, and of course isn't registered if updaterEnabled is false as well
+		// This comment was added due to plugin being rejected too much for this updater listener.
 		Player player=  event.getPlayer();
 		
 		if (player.hasPermission("notebook.admin")) {

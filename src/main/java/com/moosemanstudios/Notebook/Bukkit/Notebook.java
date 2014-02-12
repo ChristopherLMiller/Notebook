@@ -1,3 +1,4 @@
+// i am a comment added because bukkitdev fails so hardcore that you can't upload a file again without changing something.... seriously.....
 package com.moosemanstudios.Notebook.Bukkit;
 
 import java.io.File;
@@ -37,6 +38,7 @@ public class Notebook  extends JavaPlugin {
 		loadConfig();
 		
 		// check updater settings
+		// Note: updaterEnabled, updaterAuto, and updaterNotify are all obtained from config
 		if (updaterEnabled) {
 			if (updaterAuto) {
 				Updater updater = new Updater(this, 35179, this.getFile(), Updater.UpdateType.DEFAULT, true);

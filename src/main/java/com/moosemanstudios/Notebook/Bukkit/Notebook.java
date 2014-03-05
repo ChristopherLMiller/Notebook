@@ -76,7 +76,7 @@ public class Notebook  extends JavaPlugin {
 		else if (NoteManager.getInstance().getBackend() == Backend.SQLITE)
 			NoteManager.getInstance().initSqlite(getConfig().getString("storage.sqlite.filename"), getConfig().getString("storage.sqlite.table"));
 		else if (NoteManager.getInstance().getBackend() == Backend.MYSQL)
-			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table"));
+			NoteManager.getInstance().initMysql(getConfig().getString("storage.mysql.host"), getConfig().getInt("storage.mysql.port"), getConfig().getString("storage.mysql.username"), getConfig().getString("storage.mysql.password"), getConfig().getString("storage.mysql.database"), getConfig().getString("storage.mysql.table-prefix") + getConfig().getString("storage.mysql.table"));
 	
 		// register the command executor
 		noteExecutor = new NotebookCommandExecutor(this);
@@ -154,6 +154,7 @@ public class Notebook  extends JavaPlugin {
 				if (!getConfig().contains("storage.mysql.password")) getConfig().set("storage.mysql.password", "password");
 				if (!getConfig().contains("storage.mysql.database")) getConfig().set("storage.mysql.database", "minecraft");
 				if (!getConfig().contains("storage.mysql.table")) getConfig().set("storage.mysql.table", "notes");
+				if (!getConfig().contains("storage.msyql.table-prefix")) getConfig().set("storage.mysql.table-prefix", "notebook_");
 
 				saveConfig();
 				break;

@@ -1,19 +1,17 @@
 // i am a comment added because bukkitdev fails so hardcore that you can't upload a file again without changing something.... seriously.....
 package com.moosemanstudios.Notebook.Bukkit;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-
+import com.moosemanstudios.Notebook.Core.NoteManager;
+import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 import net.gravitydevelopment.updater.Updater;
-
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
-import com.moosemanstudios.Notebook.Core.NoteManager;
-import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 public class Notebook  extends JavaPlugin {
 	public Logger log = Logger.getLogger("minecraft");
@@ -154,7 +152,6 @@ public class Notebook  extends JavaPlugin {
 				if (!getConfig().contains("storage.mysql.password")) getConfig().set("storage.mysql.password", "password");
 				if (!getConfig().contains("storage.mysql.database")) getConfig().set("storage.mysql.database", "minecraft");
 				if (!getConfig().contains("storage.mysql.table")) getConfig().set("storage.mysql.table", "notes");
-				if (!getConfig().contains("storage.msyql.table-prefix")) getConfig().set("storage.mysql.table-prefix", "notebook_");
 
 				saveConfig();
 				break;

@@ -1,24 +1,21 @@
 package com.moosemanstudios.Notebook.Bukkit;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import com.moosemanstudios.Notebook.Core.Note;
+import com.moosemanstudios.Notebook.Core.NoteManager;
+import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 import net.gravitydevelopment.updater.Updater;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.moosemanstudios.Notebook.Core.Note;
-import com.moosemanstudios.Notebook.Core.NoteManager;
-import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NotebookCommandExecutor implements CommandExecutor {
 
 	private Notebook plugin;
-	private CommandSender sender;
 	
 	public NotebookCommandExecutor(Notebook instance) {
 		plugin = instance;
@@ -27,30 +24,29 @@ public class NotebookCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		String[] split = args;
 		String commandName = cmd.getName().toLowerCase();
-		this.sender = sender;
-		
+
 		if (commandName.equalsIgnoreCase("note")) {
 			if (split.length == 0) {
-				showHelp();
+				showHelp(sender);
 			} else {
 				if (split[0].equalsIgnoreCase("help")) {
-					showHelp();					
+					showHelp(sender);
 				} else if (split[0].equalsIgnoreCase("version")) {
-					showVersion();
+					showVersion(sender);
 				} else if (split[0].equalsIgnoreCase("add")) {
-					addNote(split);
+					addNote(split, sender);
 				} else if (split[0].equalsIgnoreCase("update")) {
-					update();	
+					update(sender);
 				} else if (split[0].equalsIgnoreCase("remove")) {
-					removeNote(split);
+					removeNote(split, sender);
 				} else if (split[0].equalsIgnoreCase("show")) {
-					show(split);					
+					show(split, sender);
 				} else if (split[0].equalsIgnoreCase("list")) {
-					list(split);
+					list(split, sender);
 				} else if (split[0].equalsIgnoreCase("reload")) {
-					reload();
+					reload(sender);
 				} else if (split[0].equalsIgnoreCase("backend")) {
-					setBackend(split);
+					setBackend(split,sender);
 				} else {
 					sender.sendMessage(ChatColor.RED + "Unknown command, type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");
 				}
@@ -61,7 +57,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		return false;
 	}
 	
-	private void setBackend(String[] split) {
+	private void setBackend(String[] split, CommandSender sender) {
 		if (sender.hasPermission("notebook.admin")) {
 			if (split.length != 1) {
 				// change the current backend and run command to save all current records out to that new backend
@@ -123,7 +119,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 	}
 
-	private void reload() {
+	private void reload(CommandSender sender) {
 		// reload the file from disk, in case of manual edit
 		if (sender.hasPermission("notebook.admin")) {
 			NoteManager.getInstance().reload();
@@ -133,7 +129,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 	}
 
-	private void list(String[] split) {
+	private void list(String[] split, CommandSender sender) {
 		// list all players who have a note about them
 		if (sender.hasPermission("notebook.list")) {
 			HashMap<String, Integer> players = NoteManager.getInstance().getPlayers();
@@ -153,7 +149,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 	}
 
-	private void show(String[] split) {
+	private void show(String[] split, CommandSender sender) {
 		// show notes about player
 		if (sender.hasPermission("notebook.show")) {
 			if (split.length >= 2) {					
@@ -181,7 +177,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}		
 	}
 
-	private void showVersion() {
+	private void showVersion(CommandSender sender) {
 		// display plugin version
 		sender.sendMessage(ChatColor.GOLD + "Notebook Version: " + ChatColor.WHITE + plugin.pdfFile.getVersion() + ChatColor.GOLD + " - Author: moose517");
 		
@@ -199,7 +195,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		return result;
 	}
 	
-	private void showHelp() {
+	private void showHelp(CommandSender sender) {
 		sender.sendMessage("/note help" + ChatColor.RED + ": Display this help screen");
 		sender.sendMessage("/note version " + ChatColor.RED + ": Show plugin version");
 		
@@ -222,7 +218,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 	}
 	
-	public void update() {
+	public void update(CommandSender sender) {
 		if (sender.hasPermission("notebook.admin")) {
 			if (plugin.updaterEnabled) { 
 				Updater updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
@@ -266,7 +262,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 	}
 	
-	private void addNote(String[] split) {
+	private void addNote(String[] split, CommandSender sender) {
 		// check permissions first of all
 		if (sender.hasPermission("notebook.add")) {
 			// make sure they have specified all the necessary inputs
@@ -302,7 +298,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		
 	}
 	
-	private void removeNote(String[] split) {
+	private void removeNote(String[] split, CommandSender sender) {
 		// remove note about player
 		if (sender.hasPermission("notebook.remove")) {
 			if (split.length >= 2) {	// split[0] = remove, split[1] = playername, split[2] = indextoremove

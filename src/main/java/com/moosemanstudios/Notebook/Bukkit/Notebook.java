@@ -1,9 +1,12 @@
 // i am a comment added because bukkitdev fails so hardcore that you can't upload a file again without changing something.... seriously.....
 package com.moosemanstudios.Notebook.Bukkit;
 
+import com.moosemanstudios.Notebook.Bukkit.Listeners.InteractionListener;
+import com.moosemanstudios.Notebook.Bukkit.Listeners.UpdaterPlayerListener;
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 import net.gravitydevelopment.updater.Updater;
+import ninja.amp.ampmenus.MenuListener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
@@ -14,21 +17,26 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Notebook  extends JavaPlugin {
+	public static Notebook instance;
 	public Logger log = Logger.getLogger("minecraft");
+
 	NotebookCommandExecutor noteExecutor;
 	String prefix = "[Notebook]";
-	PluginDescriptionFile pdfFile;
+	static PluginDescriptionFile pdfFile;
 	Backend backend;
 	Boolean debug = false;
 	Boolean broadcastMessage;
-	public Boolean updaterEnabled, updaterAuto, updaterNotify, updateAvailable;
-	String updateName = "";
-	Long updateSize = 0L;
+
+	// Curse ID - used for updater service
+	public static final int curseID = 35179;
+
+	public Boolean updaterEnabled, updaterAuto, updaterNotify;
 	public File pluginFile;
 	public Boolean sqlibraryFound;
-	
+
 	@Override
 	public void onEnable() {
+		instance = this;
 		pdfFile = this.getDescription();
 		pluginFile = this.getFile();
 		
@@ -39,7 +47,7 @@ public class Notebook  extends JavaPlugin {
 		// Note: updaterEnabled, updaterAuto, and updaterNotify are all obtained from config
 		if (updaterEnabled) {
 			if (updaterAuto) {
-				Updater updater = new Updater(this, 35179, this.getFile(), Updater.UpdateType.DEFAULT, true);
+				Updater updater = new Updater(this, curseID, this.getFile(), Updater.UpdateType.DEFAULT, true);
 				if (updater.getResult() == Updater.UpdateResult.SUCCESS)
 				log.info(prefix + " Update downloaded successfully, restart server to apply update");
 			}
@@ -48,7 +56,7 @@ public class Notebook  extends JavaPlugin {
 				this.getServer().getPluginManager().registerEvents(new UpdaterPlayerListener(this), this);
 			}
 		}
-		
+
 		// check if SQLibrary is found before proceeding
 		if (getServer().getPluginManager().getPlugin("SQLibrary") == null) {
 			sqlibraryFound = false;
@@ -63,6 +71,12 @@ public class Notebook  extends JavaPlugin {
 		} else {
 			sqlibraryFound = true;
 		}
+
+		// Register menu listener
+		MenuListener.getInstance().register(this);
+
+		// Register interaction event
+		getServer().getPluginManager().registerEvents(new InteractionListener(), this);
 		
 		// set the backend at this point
 		NoteManager.getInstance().setBackend(backend);
@@ -79,7 +93,7 @@ public class Notebook  extends JavaPlugin {
 		// register the command executor
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
-		
+
 		try {
 			Metrics metrics = new Metrics(this);
 			
@@ -226,4 +240,6 @@ public class Notebook  extends JavaPlugin {
 	public File getFileFolder() {
 		return this.getFile();
 	}
+
+	public static String getVersion() { return pdfFile.getVersion(); }
 }

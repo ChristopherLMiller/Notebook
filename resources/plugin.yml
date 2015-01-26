@@ -5,10 +5,11 @@ author: moose517
 main: com.moosemanstudios.Notebook.Bukkit.Notebook
 softdepend: [SQLibrary]
 commands:
-    note:
-        description: generic notebookbook command
+    notebook:
+        aliases: [note]
+        description: generic notebook command
 permissions:
-    notebookbook.*:
+    notebook.*:
         description: Give all notebook related permissions
         children:
             notebook.add: true
@@ -32,4 +33,4 @@ permissions:
     notebook.list:
         description: List all players who have notes
     notebook.admin:
-        descriptions: Reload the files
+        description: Reload the files

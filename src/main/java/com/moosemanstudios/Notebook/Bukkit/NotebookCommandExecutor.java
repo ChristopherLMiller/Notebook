@@ -5,18 +5,22 @@ import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 import net.gravitydevelopment.updater.Updater;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class NotebookCommandExecutor implements CommandExecutor {
 
 	private Notebook plugin;
-	
+
 	public NotebookCommandExecutor(Notebook instance) {
 		plugin = instance;
 	}
@@ -25,35 +29,56 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		String[] split = args;
 		String commandName = cmd.getName().toLowerCase();
 
-		if (commandName.equalsIgnoreCase("note")) {
-			if (split.length == 0) {
-				showHelp(sender);
-			} else {
-				if (split[0].equalsIgnoreCase("help")) {
-					showHelp(sender);
-				} else if (split[0].equalsIgnoreCase("version")) {
-					showVersion(sender);
-				} else if (split[0].equalsIgnoreCase("add")) {
-					addNote(split, sender);
-				} else if (split[0].equalsIgnoreCase("update")) {
-					update(sender);
-				} else if (split[0].equalsIgnoreCase("remove")) {
-					removeNote(split, sender);
-				} else if (split[0].equalsIgnoreCase("show")) {
-					show(split, sender);
-				} else if (split[0].equalsIgnoreCase("list")) {
-					list(split, sender);
-				} else if (split[0].equalsIgnoreCase("reload")) {
-					reload(sender);
-				} else if (split[0].equalsIgnoreCase("backend")) {
-					setBackend(split,sender);
+		// check if the command is notebook, if so lets create our main GUI
+		if (commandName.equalsIgnoreCase("notebook")) {
+			// here we gotta check that the sender is a player, otherwise fallback to old methods
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				// check the players permissions, if they don't have any permission nodes, simply show them the version
+				if (player.hasPermission("notebook.add") || player.hasPermission("notebook.remove") || player.hasPermission("notebook.show") || player.hasPermission("notebook.list") || player.hasPermission("notebook.admin"))
+				{
+					// Create the book with the lore set
+					ItemStack book = new ItemStack(Material.BOOK);
+					ItemMeta meta = book.getItemMeta();
+					meta.setDisplayName(ChatColor.GOLD + "Notebook" + ChatColor.WHITE + "-" + ChatColor.YELLOW + "Manage notes on players!");
+					meta.setLore(Arrays.asList("notebook"));
+					book.setItemMeta(meta);
+
+					// Now give the player the book
+					player.getInventory().addItem(book);
 				} else {
-					sender.sendMessage(ChatColor.RED + "Unknown command, type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");
+					showVersion(player);
 				}
-				return true;
+			} else {
+				// Its the console, fallback
+				if (split.length == 0) {
+					showHelp(sender);
+				} else {
+					if (split[0].equalsIgnoreCase("help")) {
+						showHelp(sender);
+					} else if (split[0].equalsIgnoreCase("version")) {
+						showVersion(sender);
+					} else if (split[0].equalsIgnoreCase("add")) {
+						addNote(split, sender);
+					} else if (split[0].equalsIgnoreCase("update")) {
+						update(sender);
+					} else if (split[0].equalsIgnoreCase("remove")) {
+						removeNote(split, sender);
+					} else if (split[0].equalsIgnoreCase("show")) {
+						show(split, sender);
+					} else if (split[0].equalsIgnoreCase("list")) {
+						list(split, sender);
+					} else if (split[0].equalsIgnoreCase("reload")) {
+						reload(sender);
+					} else if (split[0].equalsIgnoreCase("backend")) {
+						setBackend(split, sender);
+					} else {
+						sender.sendMessage(ChatColor.RED + "Unknown command, type " + ChatColor.WHITE + "/note help" + ChatColor.RED + " for help");
+					}
+				}
 			}
+			return true;
 		}
-	
 		return false;
 	}
 	

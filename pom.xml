@@ -7,29 +7,43 @@
 	<!-- Project information -->
 	<groupId>com.moosemanstudios</groupId>
 	<artifactId>notebook</artifactId>
-	<version>2.4.9</version>
+	<version>3.0-SNAPSHOT</version>
 	<name>Notebook</name>
 	<url>http://www.moosemanstudios.com</url>
 	<description>A simple plugin to track notes on players.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkitVersion>1.7.2-R0.3</bukkitVersion>
+        <metricsVersion>R8-SNAPSHOT</metricsVersion>
+		<bukkitVersion>1.7.9-R0.2</bukkitVersion>
+        <updaterVersion>2.1</updaterVersion>
 	</properties>
 
 	<!-- Repository locations -->
 	<repositories>
 		<repository>
 			<id>bukkit-repo</id>
+            <name>Bukkit Nexus Repo</name>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>Plugin Metrics</id>
+            <name>Metrics Nexus Repo</name>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 		<repository>
 			<id>Updater</id>
+            <name>Updater Repo</name>
 			<url>http://repo.gravitydevelopment.net</url>
+		</repository>
+        <repository>
+            <id>dakani</id>
+            <name>Dakani Nexus Repo</name>
+            <url>http://repo.dakanilabs.com/content/repositories/public</url>
+        </repository>
+		<repository>
+			<id>greatman-repo</id>
+			<url>http://repo.greatmancode.com/content/groups/public/</url>
 		</repository>
 	</repositories>
 
@@ -44,15 +58,14 @@
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
 			<artifactId>metrics</artifactId>
-			<version>R8-SNAPSHOT</version>
+			<version>${metricsVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>lib.PatPeter</groupId>
+			<groupId>lib.PatPeter.SQLibrary</groupId>
 			<artifactId>SQLibrary</artifactId>
-			<version>4.2</version>
-			<systemPath>${basedir}/lib/SQLibrary.jar</systemPath>
-			<scope>system</scope>
+			<version>7.1</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.gravitydevelopment.updater</groupId>
@@ -60,12 +73,18 @@
 			<version>2.1</version>
             <scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>ninja.amp</groupId>
+			<artifactId>ampmenus</artifactId>
+			<version>1.4-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<!-- Build configuration -->
 	<build>
 		<defaultGoal>clean package</defaultGoal>
-		<finalName>Notebook</finalName>
+		<finalName>${project.name}</finalName>
 
 		<!-- Resources -->
 		<resources>

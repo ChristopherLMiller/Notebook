@@ -5,6 +5,7 @@ import com.moosemanstudios.Notebook.Bukkit.Menu.PlayerNotesMenu;
 import com.moosemanstudios.Notebook.Bukkit.Notebook;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ public class PlayerItem extends MenuItem {
 	private Integer playerCount;
 
 	public PlayerItem(String player, Integer count) {
-		super("player notes", new ItemStack(Material.SKULL_ITEM, 1, (short)3));
+		super("player notes", new ItemStack(Material.SKULL_ITEM, 1, (byte)3));
 
 		playerName = player;
 		playerCount = count;
@@ -37,10 +38,10 @@ public class PlayerItem extends MenuItem {
 
 	@Override
 	public ItemStack getFinalIcon(Player player) {
-		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta)skull.getItemMeta();
+		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+		SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		meta.setOwner(playerName);
-		meta.setDisplayName(ChatColor.BLUE + playerName);
+		meta.setDisplayName("" + ChatColor.BLUE + playerName + "");
 
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.BLUE + "------------");

@@ -1,0 +1,5 @@
+com\moosemanstudios\Notebook\Bukkit\Notebook.class
+com\moosemanstudios\Notebook\Core\NoteManager$Backend.class
+com\moosemanstudios\Notebook\Core\NoteManager$1.class
+com\moosemanstudios\Notebook\Bukkit\Menu\ListPlayerMenu.class
+com\moosemanstudios\Notebook\Core\NoteManager.class

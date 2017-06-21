@@ -3,7 +3,6 @@ package com.moosemanstudios.Notebook.Bukkit;
 import com.moosemanstudios.Notebook.Core.Note;
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
-import net.gravitydevelopment.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,9 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class NotebookCommandExecutor implements CommandExecutor {
 
@@ -60,8 +57,6 @@ public class NotebookCommandExecutor implements CommandExecutor {
 						showVersion(sender);
 					} else if (split[0].equalsIgnoreCase("add")) {
 						addNote(split, sender);
-					} else if (split[0].equalsIgnoreCase("update")) {
-						update(sender);
 					} else if (split[0].equalsIgnoreCase("remove")) {
 						removeNote(split, sender);
 					} else if (split[0].equalsIgnoreCase("show")) {
@@ -238,55 +233,10 @@ public class NotebookCommandExecutor implements CommandExecutor {
 		}
 		if (sender.hasPermission("notebook.admin")) {
 			sender.sendMessage("/note reload" + ChatColor.RED + ": Reload the notes file");
-			sender.sendMessage("/note update" + ChatColor.RED + ": Update plugin");
 			sender.sendMessage("/note backend <flatfile/sqlite/mysql" + ChatColor.RED + ": Change backend storage type");
 		}
 	}
-	
-	public void update(CommandSender sender) {
-		if (sender.hasPermission("notebook.admin")) {
-			if (plugin.updaterEnabled) { 
-				Updater updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.NO_DOWNLOAD, false);
-				if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
-					sender.sendMessage(ChatColor.AQUA + "Update found, starting download: " + updater.getLatestName());
-					updater = new Updater(plugin, 35179, plugin.getFileFolder(), Updater.UpdateType.DEFAULT, true);
-					
-					switch (updater.getResult()) {
-					case FAIL_BADID:
-						sender.sendMessage(ChatColor.AQUA + "ID was bad, report this to moose517 on dev.bukkit.org");
-						break;
-					case FAIL_DBO:
-						sender.sendMessage(ChatColor.AQUA + "Dev.bukkit.org couldn't be contacted, try again later");
-						break;
-					case FAIL_DOWNLOAD:
-						sender.sendMessage(ChatColor.AQUA + "File download failed");
-						break;
-					case FAIL_NOVERSION:
-						sender.sendMessage(ChatColor.AQUA + "Unable to check version on dev.bukkit.org, notify moose517");
-						break;
-					case NO_UPDATE:
-						break;
-					case SUCCESS:
-						sender.sendMessage(ChatColor.AQUA + "Update downloaded successfully, restart server to apply update");
-						break;
-					case UPDATE_AVAILABLE:
-						sender.sendMessage(ChatColor.AQUA + "Update found but not downloaded");
-						break;
-					default:
-						sender.sendMessage(ChatColor.RED + "Shoudn't have had this happen, contact moose517");
-						break;
-					}
-				} else {
-					sender.sendMessage(ChatColor.AQUA + "No updates found");
-				}
-			} else {
-				sender.sendMessage(ChatColor.AQUA + "Updater not enabled.  Enabled in config");
-			}
-		} else {
-			sender.sendMessage(ChatColor.RED + "Missing required permission: " + ChatColor.WHITE + "notebook.admin");
-		}
-	}
-	
+
 	private void addNote(String[] split, CommandSender sender) {
 		// check permissions first of all
 		if (sender.hasPermission("notebook.add")) {
@@ -299,8 +249,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 				
 					if (plugin.broadcastMessage) {
 						// let all others with the permission know
-						Player[] players = plugin.getServer().getOnlinePlayers();
-						for (Player player : players) {
+						for (Player player : plugin.getServer().getOnlinePlayers()) {
 							// see if the player is the send, if so skip them
 							if (!player.getName().equalsIgnoreCase(sender.getName())) {
 								// now see if the player has the permission node

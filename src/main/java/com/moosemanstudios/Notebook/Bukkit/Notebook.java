@@ -2,18 +2,13 @@
 package com.moosemanstudios.Notebook.Bukkit;
 
 import com.moosemanstudios.Notebook.Bukkit.Listeners.InteractionListener;
-import com.moosemanstudios.Notebook.Bukkit.Listeners.UpdaterPlayerListener;
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
-import net.gravitydevelopment.updater.Updater;
 import ninja.amp.ampmenus.MenuListener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Notebook  extends JavaPlugin {
@@ -43,19 +38,6 @@ public class Notebook  extends JavaPlugin {
 		// load the config - creating if not exists
 		loadConfig();
 		
-		// check updater settings
-		// Note: updaterEnabled, updaterAuto, and updaterNotify are all obtained from config
-		if (updaterEnabled) {
-			if (updaterAuto) {
-				Updater updater = new Updater(this, curseID, this.getFile(), Updater.UpdateType.DEFAULT, true);
-				if (updater.getResult() == Updater.UpdateResult.SUCCESS)
-				log.info(prefix + " Update downloaded successfully, restart server to apply update");
-			}
-			if (updaterNotify) {
-				log.info(prefix + " Notifying admins as they login if update found");
-				this.getServer().getPluginManager().registerEvents(new UpdaterPlayerListener(this), this);
-			}
-		}
 
 		// check if SQLibrary is found before proceeding
 		if (getServer().getPluginManager().getPlugin("SQLibrary") == null) {
@@ -94,30 +76,6 @@ public class Notebook  extends JavaPlugin {
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
 
-		try {
-			Metrics metrics = new Metrics(this);
-			
-			Graph graph = metrics.createGraph("Number of note entries");
-			graph.addPlotter(new Metrics.Plotter("Notes") {
-				@Override
-				public int getValue() {
-					return NoteManager.getInstance().getNumNotes();
-				}
-			});
-			
-			Graph graph2 = metrics.createGraph("Backend type");
-			graph2.addPlotter(new Metrics.Plotter(NoteManager.getInstance().getBackend().toString().toLowerCase()) {
-				@Override
-				public int getValue() {
-					return 1;
-				}
-			});
-			
-			metrics.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	
 		// everything is done, at this point let the player know its enabled.
 		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");
 	}
@@ -143,11 +101,6 @@ public class Notebook  extends JavaPlugin {
 				// misc stuff				
 				if (!getConfig().contains("broadcast-message")) getConfig().set("broadcast-message", true);
 				if (!getConfig().contains("debug")) getConfig().set("debug", false);
-				
-				// updater stuff
-				if (!getConfig().contains("updater.enabled")) getConfig().set("updater.enabled", true);
-				if (!getConfig().contains("updater.auto")) getConfig().set("updater.auto", true);
-				if (!getConfig().contains("updater.notify")) getConfig().set("updater.notify", false);
 
 				// flat file stuff
 				if (!getConfig().contains("storage.flatfile.enabled")) getConfig().set("storage.flatfile.enabled", true);
@@ -187,20 +140,7 @@ public class Notebook  extends JavaPlugin {
 				log.info(prefix + " broadcast-messages enabled");
 			}
 		}
-		
-		// updater code
-		updaterEnabled = getConfig().getBoolean("updater.enabled");
-		updaterAuto = getConfig().getBoolean("updater.auto");
-		updaterNotify = getConfig().getBoolean("updater.notify");
-		if (debug) {
-			if (updaterEnabled)
-				log.info(prefix + " Updater enabled");
-			if (updaterAuto)
-				log.info(prefix + " Auto updating enabled");
-			if (updaterNotify)
-				log.info(prefix + " Notifying on update");
-		}
-		
+
 		// check backend types, make sure only ones enabled
 		int i = 0;
 		if (getConfig().getBoolean("storage.flatfile.enabled")) i++;

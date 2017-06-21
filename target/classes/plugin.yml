@@ -1,0 +1,36 @@
+name: Notebook
+version: 3.0
+description: A simple plugin to track notes on players.
+author: moose517
+main: com.moosemanstudios.Notebook.Bukkit.Notebook
+softdepend: [SQLibrary]
+commands:
+    notebook:
+        aliases: [note]
+        description: generic notebook command
+permissions:
+    notebook.*:
+        description: Give all notebook related permissions
+        children:
+            notebook.add: true
+            notebook.remove: true
+            notebook.show: true
+            notebook.list: true
+            notebook.admin: true
+    notebook.note:
+        description: Give all note related permissions
+        children:
+            notebook.add: true
+            notebook.remove: true
+            notebook.show: true
+            notebook.list: true
+    notebook.add:
+        description: Add note about specified player
+    notebook.remove:
+        description: Remove note about specified player
+    notebook.show:
+        description: Show notes about specified player
+    notebook.list:
+        description: List all players who have notes
+    notebook.admin:
+        description: Reload the files

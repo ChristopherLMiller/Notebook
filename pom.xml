@@ -30,7 +30,7 @@
         <repository>
             <id>dakani</id>
             <name>Dakani Nexus Repo</name>
-            <url>http://repo.dakanilabs.com/content/repositories/public</url>
+            <url>https://repo.dakanilabs.com/#browse/browse/components:public</url>
         </repository>
 		<repository>
 			<id>greatman-repo</id>
@@ -120,34 +120,48 @@
 			<!-- JAR dependency addition plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>templates/**</exclude>
-										<exclude>META-INF/*.xml</exclude>
-										<exclude>META-INF/*.txt</exclude>
-										<exclude>**/LICENSE</exclude>
-										<exclude>**/NOTICE</exclude>
-										<exclude>**/DEPENDENCIES</exclude>
-										<exclude>**/*.java</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>org.bstats:*</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>com.moosemanstudios.Notebook.Bukkit</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>META-INF/*.xml</exclude>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>**/LICENSE</exclude>
+                                        <exclude>**/NOTICE</exclude>
+                                        <exclude>**/DEPENDENCIES</exclude>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
 			</plugin>
 		</plugins>
+
 	</build>
 
 </project>

@@ -52,7 +52,7 @@ public class Notebook  extends JavaPlugin {
 		}
 
 		// Register menu listener
-		MenuListener.getInstance().register(this);
+		//MenuListener.getInstance().register(this);
 
 		// Register interaction event
 		getServer().getPluginManager().registerEvents(new InteractionListener(), this);
@@ -74,7 +74,7 @@ public class Notebook  extends JavaPlugin {
 		getCommand("note").setExecutor(noteExecutor);
 
 		// lastly lets enable some metrics tracking
-		Metrics metrics = new Metrics(this);
+		Metrics metrics = new Metrics(instance);
 
 		// load cstom chart
 		metrics.addCustomChart(new Metrics.SimplePie("backend_type") {

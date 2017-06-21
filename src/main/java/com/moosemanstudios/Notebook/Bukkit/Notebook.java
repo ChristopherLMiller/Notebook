@@ -5,6 +5,7 @@ import com.moosemanstudios.Notebook.Bukkit.Listeners.InteractionListener;
 import com.moosemanstudios.Notebook.Core.NoteManager;
 import com.moosemanstudios.Notebook.Core.NoteManager.Backend;
 import ninja.amp.ampmenus.MenuListener;
+import org.bstats.Metrics;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,10 +23,6 @@ public class Notebook  extends JavaPlugin {
 	Boolean debug = false;
 	Boolean broadcastMessage;
 
-	// Curse ID - used for updater service
-	public static final int curseID = 35179;
-
-	public Boolean updaterEnabled, updaterAuto, updaterNotify;
 	public File pluginFile;
 	public Boolean sqlibraryFound;
 
@@ -75,6 +72,17 @@ public class Notebook  extends JavaPlugin {
 		// register the command executor
 		noteExecutor = new NotebookCommandExecutor(this);
 		getCommand("note").setExecutor(noteExecutor);
+
+		// lastly lets enable some metrics tracking
+		Metrics metrics = new Metrics(this);
+
+		// load cstom chart
+		metrics.addCustomChart(new Metrics.SimplePie("backend_type") {
+			@Override
+			public String getValue() {
+				return NoteManager.getInstance().getBackend().getType().toLowerCase();
+			}
+		});
 
 		// everything is done, at this point let the player know its enabled.
 		log.info(prefix + " version " + pdfFile.getVersion() + " is enabled");

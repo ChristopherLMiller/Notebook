@@ -7,7 +7,7 @@
 	<!-- Project information -->
 	<groupId>com.moosemanstudios</groupId>
 	<artifactId>notebook</artifactId>
-	<version>3.0</version>
+	<version>3.1</version>
 	<name>Notebook</name>
 	<url>http://www.moosemanstudios.com</url>
 	<description>A simple plugin to track notes on players.</description>
@@ -15,7 +15,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ServerVersion>1.12-R0.1-SNAPSHOT</ServerVersion>
-        <updaterVersion>2.1</updaterVersion>
 	</properties>
 
 	<!-- Repository locations -->

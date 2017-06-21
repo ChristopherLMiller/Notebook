@@ -282,8 +282,7 @@ public class NotebookCommandExecutor implements CommandExecutor {
 						
 						// let all others know with permission that it was removed
 						if (plugin.broadcastMessage) {
-							Player[] players = plugin.getServer().getOnlinePlayers();
-							for (Player player : players) {
+							for (Player player : plugin.getServer().getOnlinePlayers()) {
 								if (!player.getName().equalsIgnoreCase(sender.getName())) {
 									//now see if the player has the permission node
 									if (player.hasPermission("notebook.remove")) {

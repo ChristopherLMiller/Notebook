@@ -24,9 +24,9 @@ public class InteractionListener implements Listener {
 		// check for right click
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			// see if the item in hand is a book
-			if (player.getItemInHand().getType().equals(Material.BOOK)) {
+			if (player.getInventory().getItemInMainHand().getType().equals(Material.BOOK)) {
 				// Get the lore of the book held
-				List<String> lore = player.getItemInHand().getItemMeta().getLore();
+				List<String> lore = player.getInventory().getItemInMainHand().getItemMeta().getLore();
 
 				// verify that the lore isn't null first
 				if (lore != null) {

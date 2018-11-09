@@ -14,7 +14,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<ServerVersion>1.12-R0.1-SNAPSHOT</ServerVersion>
+		<ServerVersion>1.13.2-R0.1-SNAPSHOT</ServerVersion>
 	</properties>
 
 	<!-- Repository locations -->
@@ -27,11 +27,11 @@
 			<id>bstats-repo</id>
 			<url>http://repo.bstats.org/content/repositories/releases/</url>
 		</repository>
-        <repository>
-            <id>dakani</id>
-            <name>Dakani Nexus Repo</name>
-            <url>https://repo.dakanilabs.com/#browse/browse/components:public</url>
-        </repository>
+		<repository>
+		    <id>dakani</id>
+		    <name>Dakani Nexus Repo</name>
+		    <url>https://repo.dakanilabs.com/#browse/browse/components:public</url>
+		</repository>
 		<repository>
 			<id>greatman-repo</id>
 			<url>http://repo.greatmancode.com/content/groups/public/</url>
@@ -56,19 +56,19 @@
 			<scope>provided</scope>
 		</dependency>
 
-        <!-- bStats -->
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>1.1</version>
-        </dependency>
+		<!-- bStats -->
+		<dependency>
+		    <groupId>org.bstats</groupId>
+		    <artifactId>bstats-bukkit</artifactId>
+		    <version>1.2</version>
+		</dependency>
 
 		<!-- sql library -->
 		<dependency>
 			<groupId>lib.PatPeter.SQLibrary</groupId>
 			<artifactId>SQLibrary</artifactId>
 			<version>7.1</version>
-            <scope>provided</scope>
+            		<scope>provided</scope>
 		</dependency>
 
 		<!-- amp menus -->
